@@ -16,61 +16,6 @@ function createCanvas(height = 500, width = 500) {
   return document.getElementById("canvas");
 }
 
-function point(x, y) {
-  // create point in memory
-  if (!vertex_buffer) {
-    vertex_buffer = gl.createBuffer();
-  }
-  if (!Index_Buffer) {
-    Index_Buffer = gl.createBuffer();
-  }
-  points = [...points, x, y, 0.0];
-  indexes = [...indexes, points.length / 3 - 1];
-  console.log("points", points);
-  console.log("indexes", indexes);
-
-  gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
-  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(points), gl.STATIC_DRAW);
-  gl.bindBuffer(gl.ARRAY_BUFFER, null);
-
-  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, Index_Buffer);
-  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indexes), gl.STATIC_DRAW);
-  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
-
-  //   transform to pixel
-  objectToPixel(vertex_buffer, Index_Buffer);
-
-  //   draw
-  drawPoint();
-}
-
-let triangleIndeces = [];
-function triangle(x1, y1, x2, y2, x3, y3) {
-  if (!vertex_buffer) {
-    vertex_buffer = gl.createBuffer();
-  }
-  if (!Index_Buffer) {
-    Index_Buffer = gl.createBuffer();
-  }
-  points = [...points, x1, y1, 0.0, x2, y2, 0.0, x3, y3, 0.0];
-  indexes = [...indexes, points.length / 3 - 3, points.length / 3 - 2, points.length / 3 - 1];
-
-  triangleIndeces = [...triangleIndeces, points.length / 3 - 3, points.length / 3 - 2, points.length / 3 - 1];
-  console.log("points", points);
-  console.log("indexes", indexes);
-
-  gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
-  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(points), gl.STATIC_DRAW);
-  gl.bindBuffer(gl.ARRAY_BUFFER, null);
-
-  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, Index_Buffer);
-  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indexes), gl.STATIC_DRAW);
-  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
-
-  objectToPixel(vertex_buffer, Index_Buffer);
-  drawTriangle();
-}
-
 function objectToPixel(vertex_buffer, Index_Buffer) {
   // vertex shader source code
   var vertCode = "attribute vec3 coordinates;" + "void main(void) {" + " gl_Position = vec4(coordinates, 1.0);" + "gl_PointSize = 10.0;" + "}";
@@ -141,13 +86,78 @@ function background(r = 128, g = 128, b = 128, a = 1.0) {
   gl.clear(gl.COLOR_BUFFER_BIT);
 }
 
+// point
+function point(x, y) {
+  // create point in memory
+  if (!vertex_buffer) {
+    vertex_buffer = gl.createBuffer();
+  }
+  if (!Index_Buffer) {
+    Index_Buffer = gl.createBuffer();
+  }
+  points = [...points, x, y, 0.0];
+  indexes = [...indexes, points.length / 3 - 1];
+  console.log("points", points);
+  console.log("indexes", indexes);
+
+  gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(points), gl.STATIC_DRAW);
+  gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, Index_Buffer);
+  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indexes), gl.STATIC_DRAW);
+  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
+
+  //   transform to pixel
+  objectToPixel(vertex_buffer, Index_Buffer);
+
+  //   draw
+  drawPoint();
+}
+
 function drawPoint() {
   // Draw point
   gl.drawArrays(gl.POINTS, 0, points.length / 3);
 }
 
+// triangle
+function triangle(x1, y1, x2, y2, x3, y3) {
+  if (!vertex_buffer) {
+    vertex_buffer = gl.createBuffer();
+  }
+  if (!Index_Buffer) {
+    Index_Buffer = gl.createBuffer();
+  }
+  points = [...points, x1, y1, 0.0, x2, y2, 0.0, x3, y3, 0.0];
+  indexes = [...indexes, points.length / 3 - 3, points.length / 3 - 2, points.length / 3 - 1];
+
+  console.log("points", points);
+  console.log("indexes", indexes);
+
+  gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(points), gl.STATIC_DRAW);
+  gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, Index_Buffer);
+  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indexes), gl.STATIC_DRAW);
+  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
+
+  objectToPixel(vertex_buffer, Index_Buffer);
+  drawTriangle();
+}
+
 function drawTriangle() {
   // Draw triangle
-  gl.drawElements(gl.TRIANGLES, triangleIndeces.length, gl.UNSIGNED_SHORT, 0);
+  gl.drawElements(gl.TRIANGLES, indexes.length, gl.UNSIGNED_SHORT, 0);
 }
-export { createCanvas, point, background, triangle };
+
+// polygon
+function polygon(sides) {
+  // sides is an array that contains the x and y coordinates of the polygon
+  // example: polygon([[0,0],[100,0],[100,100],[0,100]])
+}
+function drawPolygon() {
+  // Draw polygon
+}
+
+export { createCanvas, point, background, triangle, polygon };

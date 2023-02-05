@@ -16,7 +16,7 @@ function createCanvas(height = 500, width = 500) {
   return document.getElementById("canvas");
 }
 
-function point(x, y, z) {
+function point(x, y) {
   // create point in memory
   if (!vertex_buffer) {
     vertex_buffer = gl.createBuffer();
@@ -24,10 +24,10 @@ function point(x, y, z) {
   if (!Index_Buffer) {
     Index_Buffer = gl.createBuffer();
   }
-  points = [...points, x, y, z];
+  points = [...points, x, y, 0.0];
   indexes = [...indexes, points.length / 3 - 1];
-  console.log(points);
-  console.log(indexes);
+  console.log("points", points);
+  console.log("indexes", indexes);
 
   gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(points), gl.STATIC_DRAW);
@@ -44,6 +44,7 @@ function point(x, y, z) {
   drawPoint();
 }
 
+let triangleIndeces = [];
 function triangle(x1, y1, x2, y2, x3, y3) {
   if (!vertex_buffer) {
     vertex_buffer = gl.createBuffer();
@@ -53,8 +54,10 @@ function triangle(x1, y1, x2, y2, x3, y3) {
   }
   points = [...points, x1, y1, 0.0, x2, y2, 0.0, x3, y3, 0.0];
   indexes = [...indexes, points.length / 3 - 3, points.length / 3 - 2, points.length / 3 - 1];
-  console.log(points);
-  console.log(indexes);
+
+  triangleIndeces = [...triangleIndeces, points.length / 3 - 3, points.length / 3 - 2, points.length / 3 - 1];
+  console.log("points", points);
+  console.log("indexes", indexes);
 
   gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(points), gl.STATIC_DRAW);
@@ -65,6 +68,7 @@ function triangle(x1, y1, x2, y2, x3, y3) {
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
 
   objectToPixel(vertex_buffer, Index_Buffer);
+  drawTriangle();
 }
 
 function objectToPixel(vertex_buffer, Index_Buffer) {
@@ -144,6 +148,6 @@ function drawPoint() {
 
 function drawTriangle() {
   // Draw triangle
-  gl.drawElements(gl.TRIANGLES, indexes.length, gl.UNSIGNED_SHORT, 0);
+  gl.drawElements(gl.TRIANGLES, triangleIndeces.length, gl.UNSIGNED_SHORT, 0);
 }
-export { createCanvas, point, background };
+export { createCanvas, point, background, triangle };

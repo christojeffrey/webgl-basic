@@ -160,4 +160,34 @@ function drawPolygon() {
   // Draw polygon
 }
 
-export { createCanvas, point, background, triangle, polygon };
+// line
+function line(x1, y1, x2, y2) {
+  if (!vertex_buffer) {
+    vertex_buffer = gl.createBuffer();
+  }
+  if (!Index_Buffer) {
+    Index_Buffer = gl.createBuffer();
+  }
+  points = [...points, x1, y1, 0.0, x2, y2, 0.0];
+  indexes = [...indexes, points.length / 3 - 2, points.length / 3 - 1];
+
+  console.log("points", points);
+  console.log("indexes", indexes);
+
+  gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(points), gl.STATIC_DRAW);
+  gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, Index_Buffer);
+  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indexes), gl.STATIC_DRAW);
+  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
+
+  objectToPixel(vertex_buffer, Index_Buffer);
+  drawLine();
+}
+function drawLine() {
+  // Draw line
+  gl.drawElements(gl.LINES, indexes.length, gl.UNSIGNED_SHORT, 0);
+}
+
+export { createCanvas, point, background, triangle, polygon, line };

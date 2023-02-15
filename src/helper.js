@@ -187,7 +187,8 @@ function line(x1, y1, x2, y2) {
 }
 function drawLine() {
   // Draw line
-  gl.drawElements(gl.LINES, indexes.length, gl.UNSIGNED_SHORT, 0);
+  // gl.drawElements(gl.LINES, indexes.length, gl.UNSIGNED_SHORT, 0);
+  gl.drawArrays(gl.LINES, 0, points.length / 3);
 }
 
 export { createCanvas, point, background, triangle, polygon, line };

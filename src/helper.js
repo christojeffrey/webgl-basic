@@ -15,9 +15,14 @@ function createCanvas(height = 1000, width = 1000) {
   gl = canvas.getContext("webgl");
 
   canvas.onmousedown = handleMouseDown;
+  canvas.onmouseenter = handleMouseHover;
   return document.getElementById("canvas");
 }
 
+function handleMouseHover(e) {
+  // change cursor to crosshair
+  canvas.style.cursor = "crosshair";
+}
 function handleMouseDown(e) {
   let x = e.clientX;
   let y = e.clientY;

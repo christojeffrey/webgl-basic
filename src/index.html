@@ -9,9 +9,23 @@
   </head>
   <body>
     <div id="mainContainer">
-      <div id="topNav">testing</div>
+      <div id="topNav">
+        <div>hei</div>
+        <div>
+          <!-- dropdown for item to draw could be point, line, square -->
+          <select id="drawItem">
+            <option value="none">none</option>
+            <option value="point">point</option>
+            <option value="line">line</option>
+            <option value="square">square</option>
+          </select>
+        </div>
+      </div>
       <div class="container">
-        <div id="leftNav">left nav</div>
+        <div id="leftNav">
+          left nav
+          <ul id="objectList"></ul>
+        </div>
         <div id="canvasContainer">
           <div id="root">
             <!-- this is the location of the canvas -->

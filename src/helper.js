@@ -6,6 +6,9 @@ let Index_Buffer;
 let points = [];
 let indexes = [];
 
+// list of objects
+let drawnItems = [];
+
 function createCanvas(height = 1000, width = 1000) {
   canvas = document.createElement("canvas");
   canvas.id = "canvas";
@@ -14,7 +17,6 @@ function createCanvas(height = 1000, width = 1000) {
   document.getElementById("root").appendChild(canvas);
   gl = canvas.getContext("webgl");
 
-  canvas.onmousedown = handleMouseDown;
   canvas.onmouseenter = handleMouseHover;
   return document.getElementById("canvas");
 }
@@ -23,15 +25,7 @@ function handleMouseHover(e) {
   // change cursor to crosshair
   canvas.style.cursor = "crosshair";
 }
-function handleMouseDown(e) {
-  let x = e.clientX;
-  let y = e.clientY;
-  let rect = e.target.getBoundingClientRect();
-  x = (x - rect.left - canvas.width / 2) / (canvas.width / 2);
-  y = (canvas.height / 2 - (y - rect.top)) / (canvas.height / 2);
-  console.log("x", x);
-  console.log("y", y);
-}
+
 function objectToPixel(vertex_buffer, Index_Buffer) {
   // vertex shader source code
   var vertCode = "attribute vec3 coordinates;" + "void main(void) {" + " gl_Position = vec4(coordinates, 1.0);" + "gl_PointSize = 10.0;" + "}";
@@ -127,6 +121,8 @@ function point(x, y) {
   //   transform to pixel
   objectToPixel(vertex_buffer, Index_Buffer);
 
+  // add to list of objects
+  drawnItems.push({ type: "point", x, y });
   //   draw
   drawPoint();
 }
@@ -159,6 +155,10 @@ function triangle(x1, y1, x2, y2, x3, y3) {
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
 
   objectToPixel(vertex_buffer, Index_Buffer);
+
+  // add to list of objects
+  drawnItems.push({ type: "triangle", x1, y1, x2, y2, x3, y3 });
+
   drawTriangle();
 }
 
@@ -194,6 +194,10 @@ function polygon(sides) {
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
 
   objectToPixel(vertex_buffer, Index_Buffer);
+
+  // add to list of objects
+  drawnItems.push({ type: "polygon", sides });
+
   drawPolygon();
 }
 function drawPolygon() {
@@ -224,6 +228,10 @@ function line(x1, y1, x2, y2) {
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
 
   objectToPixel(vertex_buffer, Index_Buffer);
+
+  // add to list of objects
+  drawnItems.push({ type: "line", x1, y1, x2, y2 });
+
   drawLine();
 }
 function drawLine() {
@@ -290,4 +298,4 @@ function isPointInTriangle(p, p1, p2, p3) {
   return s > 0 && t > 0 && s + t < 2 * a * sign;
 }
 
-export { createCanvas, point, background, triangle, polygon, line, triangulate };
+export { createCanvas, point, background, triangle, polygon, line, triangulate, drawnItems };

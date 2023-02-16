@@ -1,0 +1,47 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+  background: #d3d3d3;
+}
+
+#mainContainer {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+#topNav {
+  background-color: #333;
+  overflow: hidden;
+  height: 50px;
+}
+
+.container {
+  display: flex;
+  flex-direction: row;
+  flex-grow: 1;
+}
+#root {
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+  flex-grow: 1;
+}
+#canvasContainer {
+  display: flex;
+  flex-direction: row;
+  flex-grow: 1;
+  height: 100%;
+}
+#leftNav {
+  float: left;
+  width: 15%;
+  background-color: #f1f1f1;
+  padding: 20px;
+}
+#rightNav {
+  float: right;
+  width: 15%;
+  background-color: #f1f1f1;
+  padding: 20px;
+}

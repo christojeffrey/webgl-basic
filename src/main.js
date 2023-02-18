@@ -44,8 +44,10 @@ function updateObjectList() {
 point(0.4, 0.0);
 
 line(0.8, 0.0, 0.8, 0.5);
-point(0.0, 0.0);
-line(0.4, 0.4, 0.7, 0.9);
+// point(0.0, 0.0);
+// line(0.4, 0.4, 0.7, 0.9);
 
-point(0.4, 0.5);
+triangle([0.0, 0.0, 0.4, 0.0, 0.4, 0.4], false);
+
+// point(0.4, 0.5);
 updateObjectList();

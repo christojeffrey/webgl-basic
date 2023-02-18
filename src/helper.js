@@ -170,7 +170,8 @@ function triangle([x1, y1, x2, y2, x3, y3], lined = false) {
 
 function drawTriangle() {
   // Draw triangle
-  gl.drawElements(gl.TRIANGLES, indexes.length, gl.UNSIGNED_SHORT, 0);
+  let offset = setOffset();
+  gl.drawElements(gl.TRIANGLES, 3, gl.UNSIGNED_SHORT, offset);
 }
 
 function drawLinedTriangle() {

@@ -1,7 +1,7 @@
-import { createCanvas, point, background, triangle, polygon, line, triangulate, drawnItems } from "./helper.js";
+import { createCanvas, point, background, triangle, polygon, line, triangulate, drawnItems, convexHull, removeUnusedPoints } from "./helper.js";
 
 /*============== Creating a canvas ====================*/
-let canvas = createCanvas(891, 1300);
+let canvas = createCanvas(1000, 1000);
 
 // listen for drawItem id dropdown value
 let drawItem = document.getElementById("drawItem");
@@ -51,28 +51,34 @@ function updateObjectList() {
 // line(0.0, 0.2, 0.1, 0.5);
 // line(0.2, 0.3, 0.8, 0.9);
 // triangle(0.0, 0.0, 0.8, 0.0, 0.8, 0.5);
-// triangle(0.0, -1.0, 0.8, -0.2, 0.8, -0.5);
-// let points = [
-//   [0, 0.8],
-//   [0.8, 0],
-//   [0, 0],
-//   [0.8, 0.8],
-// ];
-// console.log("testing1");
-// let triangulated = triangulate(points);
-// // flatten
-// let flattenned = [];
 
-// console.log("testing2");
-// for (let i = 0; i < triangulated.length; i++) {
-//   console.log("triangulated[i]");
-//   console.log(triangulated[i]);
-//   for (let j = 0; j < triangulated[i].length; j++) {
-//     flattenned.push(triangulated[i][j]);
-//   }
+// move point left and down
+let points = [
+  [0.5, 0.0],
+  [0.0, 0.0],
+  [-0.5, 0.5],
+  [0.5, 0.5],
+  [-0.5, 0.0],
+  [0.0, 0.5],
+];
+
+// filter with convex hull
+points = convexHull(points);
+points = removeUnusedPoints(points);
+
+// for each point, draw a point
+// for (let i = 0; i < points.length; i++) {
+//   point(points[i][0], points[i][1]);
 // }
-// console.log("flattenned");
-// console.log(flattenned);
-// polygon(flattenned);
+let triangles = triangulate(points);
+for (let i = 0; i < triangles.length; i++) {
+  // flatten
+  triangles[i] = triangles[i].flat();
+  console.log("drawn", triangles[i]);
+  // if (i == 0) continue;
+  triangle(triangles[i], false);
+}
 
 /*============= Drawing the primitive ===============*/
+
+updateObjectList();

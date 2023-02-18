@@ -54,31 +54,15 @@ function updateObjectList() {
 
 // move point left and down
 let points = [
-  [0.5, 0.0],
-  [0.0, 0.0],
+  [0.0, 1],
   [-0.5, 0.5],
+  [0.0, 0.5],
+  [0.0, 0.0],
   [0.5, 0.5],
   [-0.5, 0.0],
-  [0.0, 0.5],
 ];
 
-// filter with convex hull
-points = convexHull(points);
-points = removeUnusedPoints(points);
-
-// for each point, draw a point
-// for (let i = 0; i < points.length; i++) {
-//   point(points[i][0], points[i][1]);
-// }
-let triangles = triangulate(points);
-for (let i = 0; i < triangles.length; i++) {
-  // flatten
-  triangles[i] = triangles[i].flat();
-  console.log("drawn", triangles[i]);
-  // if (i == 0) continue;
-  triangle(triangles[i], false);
-}
-
+polygon(points);
 /*============= Drawing the primitive ===============*/
 
 updateObjectList();

@@ -176,41 +176,23 @@ function drawLinedTriangle() {
   gl.drawElements(gl.LINES, indexes.length, gl.UNSIGNED_SHORT, 0);
 }
 // polygon
-function polygon(sides) {
-  // sides is an array that contains the x and y coordinates of the polygon
-  // example: polygon([[0,0],[100,0],[100,100],[0,100]])
-  if (!vertex_buffer) {
-    vertex_buffer = gl.createBuffer();
+function polygon(points) {
+  // filter with convex hull
+  points = convexHull(points);
+  points = removeUnusedPoints(points);
+
+  // for each point, draw a point
+  // for (let i = 0; i < points.length; i++) {
+  //   point(points[i][0], points[i][1]);
+  // }
+  let triangles = triangulate(points);
+  for (let i = 0; i < triangles.length; i++) {
+    // flatten
+    triangles[i] = triangles[i].flat();
+    console.log("drawn", triangles[i]);
+    // if (i == 0) continue;
+    triangle(triangles[i], false);
   }
-  if (!Index_Buffer) {
-    Index_Buffer = gl.createBuffer();
-  }
-  for (let i = 0; i < sides.length; i++) {
-    points = [...points, sides[i][0], sides[i][1], 0.0];
-    indexes = [...indexes, points.length / 3 - 1];
-  }
-
-  console.log("points", points);
-  console.log("indexes", indexes);
-
-  gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
-  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(points), gl.STATIC_DRAW);
-  gl.bindBuffer(gl.ARRAY_BUFFER, null);
-
-  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, Index_Buffer);
-  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indexes), gl.STATIC_DRAW);
-  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
-
-  objectToPixel(vertex_buffer, Index_Buffer);
-
-  // add to list of objects
-  drawnItems.push({ type: "polygon", sides });
-
-  drawPolygon();
-}
-function drawPolygon() {
-  // Draw polygon using draw array
-  gl.drawArrays(gl.TRIANGLE_FAN, 0, points.length / 3);
 }
 
 // line

@@ -129,7 +129,9 @@ function point(x, y) {
 
 function drawPoint() {
   // Draw point
-  gl.drawArrays(gl.POINTS, 0, points.length / 3);
+  console.log(points.length);
+  let offset = setOffset();
+  gl.drawElements(gl.POINTS, 1, gl.UNSIGNED_SHORT, offset);
 }
 
 // triangle
@@ -224,10 +226,26 @@ function line(x1, y1, x2, y2) {
 
   drawLine();
 }
+
+function setOffset() {
+  let offset = 0;
+  for (let i = 0; i < drawnItems.length - 1; i++) {
+    if (drawnItems[i].type == "point") {
+      offset += 2;
+    }
+    if (drawnItems[i].type == "line") {
+      offset += 4;
+    }
+  }
+  return offset;
+}
 function drawLine() {
   // Draw line
-  // gl.drawElements(gl.LINES, indexes.length, gl.UNSIGNED_SHORT, 0);
-  gl.drawArrays(gl.LINES, 0, points.length / 3);
+  // gl.drawElements({ mode: gl.LINES, count: indexes.length, type: gl.UNSIGNED_SHORT, offset: 0 });
+  // draw the fourth and the fifth point, which is the line
+  let offset = setOffset();
+  console.log("offset", offset);
+  gl.drawElements(gl.LINES, 2, gl.UNSIGNED_SHORT, offset);
 }
 let iteration = 0;
 function triangulate(sides) {
@@ -537,4 +555,5 @@ function removeUnusedPoints(points) {
   }
   return newPoints;
 }
+
 export { createCanvas, point, background, triangle, polygon, line, triangulate, drawnItems, convexHull, removeUnusedPoints };

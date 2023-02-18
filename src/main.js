@@ -41,28 +41,11 @@ function updateObjectList() {
 }
 
 /*======== Defining and storing the geometry ===========*/
-// point(0.0, 0.0, 0.0);
-// point(0.8, 0.0, 0.0);
-// point(0.8, 0.5, 0.0);
-// point(0.8, -0.3, 0.0);
-// point(0.8, -0.5, 0.0);
-// point(0.0, 0.0);
-// point(0.0, 0.2);
-// line(0.0, 0.2, 0.1, 0.5);
-// line(0.2, 0.3, 0.8, 0.9);
-// triangle(0.0, 0.0, 0.8, 0.0, 0.8, 0.5);
+point(0.4, 0.0);
 
-// move point left and down
-let points = [
-  [0.0, 1],
-  [-0.5, 0.5],
-  [0.0, 0.5],
-  [0.0, 0.0],
-  [0.5, 0.5],
-  [-0.5, 0.0],
-];
+line(0.8, 0.0, 0.8, 0.5);
+point(0.0, 0.0);
+line(0.4, 0.4, 0.7, 0.9);
 
-polygon(points);
-/*============= Drawing the primitive ===============*/
-
+point(0.4, 0.5);
 updateObjectList();

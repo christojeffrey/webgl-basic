@@ -9,6 +9,8 @@ let indexes = [];
 // list of objects
 let drawnItems = [];
 
+let objectToBeDrawn = [];
+
 function createCanvas(height = 1000, width = 1000) {
   canvas = document.createElement("canvas");
   canvas.id = "canvas";
@@ -121,16 +123,15 @@ function point(x, y) {
   //   transform to pixel
   objectToPixel(vertex_buffer, Index_Buffer);
 
-  // add to list of objects
-  drawnItems.push({ type: "point", x, y });
   //   draw
   drawPoint();
 }
 
 function drawPoint() {
   // Draw point
-  console.log(points.length);
+  console.log("draw point");
   let offset = setOffset();
+  console.log("offset", offset);
   gl.drawElements(gl.POINTS, 1, gl.UNSIGNED_SHORT, offset);
 }
 
@@ -158,11 +159,8 @@ function triangle([x1, y1, x2, y2, x3, y3], lined = false) {
 
   objectToPixel(vertex_buffer, Index_Buffer);
 
-  // add to list of objects
-  drawnItems.push({ type: "triangle", x1, y1, x2, y2, x3, y3 });
-
   if (lined) {
-    drawLinedTriangle();
+    drawTriangle();
   } else {
     drawTriangle();
   }
@@ -174,10 +172,6 @@ function drawTriangle() {
   gl.drawElements(gl.TRIANGLES, 3, gl.UNSIGNED_SHORT, offset);
 }
 
-function drawLinedTriangle() {
-  // Draw triangle
-  gl.drawElements(gl.LINES, indexes.length, gl.UNSIGNED_SHORT, 0);
-}
 // polygon
 function polygon(points) {
   // filter with convex hull
@@ -222,15 +216,14 @@ function line(x1, y1, x2, y2) {
 
   objectToPixel(vertex_buffer, Index_Buffer);
 
-  // add to list of objects
-  drawnItems.push({ type: "line", x1, y1, x2, y2 });
-
   drawLine();
 }
 
 function setOffset() {
   let offset = 0;
-  for (let i = 0; i < drawnItems.length - 1; i++) {
+  console.log("calculating offset..", drawnItems.length);
+  for (let i = 0; i < drawnItems.length; i++) {
+    console.log("drawnItems[i].type", drawnItems[i].type);
     if (drawnItems[i].type == "point") {
       offset += 2;
     }
@@ -557,4 +550,27 @@ function removeUnusedPoints(points) {
   return newPoints;
 }
 
-export { createCanvas, point, background, triangle, polygon, line, triangulate, drawnItems, convexHull, removeUnusedPoints };
+function rerender() {
+  console.log("======================================");
+  // clear the canvas
+  drawnItems = [];
+  points = [];
+  indexes = [];
+
+  // draw based on objectToBeDrawn
+  for (let i = 0; i < objectToBeDrawn.length; i++) {
+    console.log("drawing item", objectToBeDrawn[i]);
+    console.log("points", points);
+    console.log("indexes", indexes);
+    let item = objectToBeDrawn[i];
+    if (item.type == "point") {
+      point(item.x, item.y);
+    } else if (item.type == "line") {
+      line(item.x1, item.y1, item.x2, item.y2);
+    } else if (item.type == "triangle") {
+      triangle(item.x1, item.y1, item.x2, item.y2, item.x3, item.y3);
+    }
+    drawnItems.push(item);
+  }
+}
+export { createCanvas, point, background, triangle, polygon, line, triangulate, objectToBeDrawn, convexHull, removeUnusedPoints, rerender };

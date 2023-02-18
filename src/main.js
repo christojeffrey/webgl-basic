@@ -1,4 +1,4 @@
-import { createCanvas, point, background, triangle, polygon, line, triangulate, convexHull, removeUnusedPoints, rerender, objectToBeDrawn } from "./helper.js";
+import { createCanvas, rerender, createPoint, objectToBeDrawn } from "./mainInterface.js";
 
 /*============== Creating a canvas ====================*/
 let canvas = createCanvas(1000, 1000);
@@ -26,13 +26,13 @@ function handleMouseDown(e) {
   if (drawItemValue != "none") {
     if (drawItemValue == "point") {
       // add to list of objects
-      objectToBeDrawn.push({ type: "point", x, y });
+      createPoint(x, y);
     } else if (drawItemValue == "line") {
       // objectToBeDrawn.push({ type: "line", x1, y1, x2, y2 })
     }
+    rerender();
     updateObjectList();
   }
-  rerender();
 }
 
 // add li to objectList from objectToBeDrawn
@@ -46,16 +46,8 @@ function updateObjectList() {
   }
 }
 
-/*======== Defining and storing the geometry ===========*/
-// point(0.4, 0.0);
+createPoint(0.4, 0.0);
+createPoint(0.8, 0.0);
 
-// line(0.8, 0.0, 0.8, 0.5);
-// point(0.0, 0.0);
-// line(0.4, 0.4, 0.7, 0.9);
-objectToBeDrawn.push({ type: "point", x: 0.4, y: 0.0 });
-objectToBeDrawn.push({ type: "point", x: 0.8, y: 0.0 });
-// triangle([0.0, 0.0, 0.4, 0.0, 0.4, 0.4], false);
-console.log("testing!!!!!!!!!!!!!!!!!!!!");
-// point(0.4, 0.5);
 rerender();
 updateObjectList();

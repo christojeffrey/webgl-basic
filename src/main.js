@@ -1,5 +1,12 @@
 import { createCanvas, rerender, createPoint, objectToBeDrawn, setBackground, createLine } from "./mainInterface.js";
 
+const TOLERANCE = 0.01;
+
+let objectBeingDrawn = null;
+let objectToBeMoved = null;
+let isClicked = false;
+let clickedIndex = null;
+
 /*============== Creating a canvas ====================*/
 let canvas = createCanvas(1000, 1200);
 
@@ -12,11 +19,8 @@ drawItem.addEventListener("change", function () {
   console.log(drawItemValue);
 });
 
-let objectBeingDrawn = null;
-let objectToBeMoved = null;
-
 // handle mouse events
-let isClicked = false;
+
 canvas.onmousedown = handleMouseDown;
 canvas.onmouseenter = handleMouseHover;
 
@@ -28,8 +32,6 @@ function handleMouseUp(e) {
   isClicked = false;
   objectToBeMoved = null;
 }
-
-const TOLERANCE = 0.01;
 
 function handleMouseMove(e) {
   if (isClicked) {
@@ -52,6 +54,7 @@ function handleMouseMove(e) {
           if (item.type == "point") {
             if (Math.abs(item.x - x) < TOLERANCE && Math.abs(item.y - y) < TOLERANCE) {
               objectToBeMoved = item;
+              clickedIndex = i;
               break;
             }
           }
@@ -61,6 +64,8 @@ function handleMouseMove(e) {
       if (objectToBeMoved != null) {
         objectToBeMoved.x = x;
         objectToBeMoved.y = y;
+        setProperties();
+
         rerender();
       }
     } else {
@@ -77,7 +82,7 @@ function handleMouseMove(e) {
   }
 }
 
-function handleMouseHover(e) {
+function handleMouseHover(_) {
   // change cursor to crosshair
   canvas.style.cursor = "crosshair";
 }
@@ -113,7 +118,6 @@ function handleMouseDown(e) {
 // add li to objectList from objectToBeDrawn
 // update objectList
 
-let clickedIndex = null;
 function updateObjectList() {
   objectList.innerHTML = "";
   for (let i = 0; i < objectToBeDrawn.length; i++) {
@@ -137,6 +141,9 @@ function setProperties() {
     let x = objectToBeDrawn[clickedIndex].x;
     let y = objectToBeDrawn[clickedIndex].y;
     let colorHex = objectToBeDrawn[clickedIndex].colorHex;
+    // round x and y
+    x = Math.round(x * 100) / 100;
+    y = Math.round(y * 100) / 100;
     html = `
     <form id="pointProperties">
       <div id="properties-title">
@@ -173,6 +180,57 @@ function setProperties() {
       rerender();
     });
   } else if (objectToBeDrawn[clickedIndex].type == "line") {
+    let x1 = objectToBeDrawn[clickedIndex].x1;
+    let y1 = objectToBeDrawn[clickedIndex].y1;
+    let x2 = objectToBeDrawn[clickedIndex].x2;
+    let y2 = objectToBeDrawn[clickedIndex].y2;
+    let colorHex = objectToBeDrawn[clickedIndex].colorHex;
+    html = `
+    <form id="lineProperties">
+      <div id="properties-title">
+        <h3>Line Properties</h3>
+      </div>
+      <div>
+        <label for="x1">x1</label>
+        <input id="x1" value=${x1} />
+      </div>
+      <div>
+        <label for="y1">y1</label>
+        <input id="y1" value=${y1} />
+      </div>
+      <div>
+        <label for="x2">x2</label>
+        <input id="x2" value=${x2} />
+      </div>
+      <div>
+        <label for="y2">y2</label>
+        <input id="y2" value=${y2} />
+      </div>
+      <div>
+      <input type="color" id="colorHex" name="favcolor" value=${colorHex}>
+      </div>
+      <input type="submit">
+      </form>
+    `;
+    let properties = document.getElementById("properties");
+    properties.innerHTML = html;
+
+    // add event listener to form
+    let form = document.getElementById("lineProperties");
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      let x1 = document.getElementById("x1").value;
+      let y1 = document.getElementById("y1").value;
+      let x2 = document.getElementById("x2").value;
+      let y2 = document.getElementById("y2").value;
+      let colorHex = document.getElementById("colorHex").value;
+      objectToBeDrawn[clickedIndex].x1 = x1;
+      objectToBeDrawn[clickedIndex].y1 = y1;
+      objectToBeDrawn[clickedIndex].x2 = x2;
+      objectToBeDrawn[clickedIndex].y2 = y2;
+      objectToBeDrawn[clickedIndex].colorHex = colorHex;
+      rerender();
+    });
   }
 }
 

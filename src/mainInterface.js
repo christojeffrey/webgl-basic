@@ -1,4 +1,4 @@
-import { rerender, createCanvas, isFinishDrawing, objectToBeDrawn, background, objectBeingDrawn } from "./helper.js";
+import { rerender, createCanvas, finishDrawing, cancelDrawing, objectToBeDrawn, background, objectBeingDrawn } from "./helper.js";
 function createPoint(x, y, colorHex) {
   objectToBeDrawn.push({
     type: "point",
@@ -22,4 +22,4 @@ function createLine(x1, y1, x2, y2) {
     y2,
   });
 }
-export { createPoint, rerender, createCanvas, setBackground, createLine, isFinishDrawing, objectToBeDrawn, objectBeingDrawn };
+export { createPoint, rerender, createCanvas, setBackground, createLine, finishDrawing, cancelDrawing, objectToBeDrawn, objectBeingDrawn };

@@ -1,4 +1,4 @@
-import { createCanvas, rerender, createPoint, setBackground, isFinishDrawing, createLine, objectToBeDrawn, objectBeingDrawn } from "./mainInterface.js";
+import { createCanvas, rerender, cancelDrawing, createPoint, setBackground, finishDrawing, createLine, objectToBeDrawn, objectBeingDrawn } from "./mainInterface.js";
 import { getXY } from "./utils.js";
 
 const TOLERANCE = 0.01;
@@ -33,6 +33,7 @@ function handleMouseUp(e) {
   objectToBeMoved = null;
 }
 
+// used to handle dragging, and drawing animation
 function handleMouseMove(e) {
   if (isDragging) {
     // handle drag and drop
@@ -80,27 +81,32 @@ function handleMouseMove(e) {
   }
 }
 
+// used to change cursor
 function handleMouseHover(_) {
   // change cursor to crosshair
   canvas.style.cursor = "crosshair";
 }
 
+// used to handle drawing object
 function handleMouseDown(e) {
   isDragging = true;
   const { x, y } = getXY(e, canvas);
 
   // draw based on dropdown value
-  if (drawItemValue != "none") {
-    if (drawItemValue == "point") {
+  switch (drawItemValue) {
+    case "none":
+      break;
+    case "point":
       // add to list of objects
       createPoint(x, y);
-    } else if (drawItemValue == "line") {
+      break;
+    case "line":
       // initiate drawing line
       if (isDrawing) {
         // finish drawing line
         objectBeingDrawn.x2 = x;
         objectBeingDrawn.y2 = y;
-        isFinishDrawing();
+        finishDrawing();
         isDrawing = false;
       } else {
         // start drawing line
@@ -109,7 +115,8 @@ function handleMouseDown(e) {
         objectBeingDrawn.y1 = y;
         isDrawing = true;
       }
-    } else if (drawItemValue == "triangle") {
+      break;
+    case "triangle":
       // initiate drawing triangle
       if (isDrawing) {
         // if x2 and y2 is not defined
@@ -119,7 +126,7 @@ function handleMouseDown(e) {
         } else if (objectBeingDrawn.x3 == null) {
           objectBeingDrawn.x3 = x;
           objectBeingDrawn.y3 = y;
-          isFinishDrawing();
+          finishDrawing();
           isDrawing = false;
         }
       } else {
@@ -129,10 +136,11 @@ function handleMouseDown(e) {
         objectBeingDrawn.y1 = y;
         isDrawing = true;
       }
-    }
-    rerender();
-    updateObjectList();
+      break;
   }
+
+  rerender();
+  updateObjectList();
 }
 
 // update UI
@@ -255,6 +263,14 @@ function setProperties() {
   }
 }
 
+// handle keyboard event
+document.addEventListener("keydown", function (e) {
+  if (e.key == "Escape") {
+    cancelDrawing();
+    isDrawing = false;
+    rerender();
+  }
+});
 // main
 setBackground("#000000", 0);
 

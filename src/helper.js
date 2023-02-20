@@ -274,7 +274,7 @@ function rerender() {
   }
 }
 
-function isFinishDrawing() {
+function finishDrawing() {
   // update objectToBeDrawn, objectBeingDrawn
   if (objectBeingDrawn) {
     objectToBeDrawn.push(objectBeingDrawn);
@@ -291,5 +291,8 @@ function drawObject(object) {
   }
   drawnItems.push(object);
 }
+function cancelDrawing() {
+  objectBeingDrawn = {};
+}
 
-export { rerender, createCanvas, isFinishDrawing, objectToBeDrawn, background, objectBeingDrawn };
+export { rerender, createCanvas, finishDrawing, cancelDrawing, objectToBeDrawn, background, objectBeingDrawn };

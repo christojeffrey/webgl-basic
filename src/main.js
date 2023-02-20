@@ -1,4 +1,5 @@
 import { createCanvas, rerender, createPoint, setBackground, isFinishDrawing, createLine, objectToBeDrawn, objectBeingDrawn } from "./mainInterface.js";
+import { getXY } from "./utils.js";
 
 const TOLERANCE = 0.01;
 
@@ -20,7 +21,6 @@ drawItem.addEventListener("change", function () {
 });
 
 // handle mouse events
-
 canvas.onmousedown = handleMouseDown;
 canvas.onmouseenter = handleMouseHover;
 
@@ -36,7 +36,7 @@ function handleMouseUp(e) {
 function handleMouseMove(e) {
   if (isDragging) {
     // handle drag and drop
-    const { x, y } = getXY(e);
+    const { x, y } = getXY(e, canvas);
 
     //  draw based on dropdown value
     if (drawItemValue == "none") {
@@ -69,7 +69,7 @@ function handleMouseMove(e) {
   // adding animation when drawing
 
   if (isDrawing) {
-    const { x, y } = getXY(e);
+    const { x, y } = getXY(e, canvas);
     if (drawItemValue == "line") {
       // on the proccess drawing line
       objectBeingDrawn.x2 = x;
@@ -87,10 +87,9 @@ function handleMouseHover(_) {
 
 function handleMouseDown(e) {
   isDragging = true;
-  const { x, y } = getXY(e);
-  console.log("x", x);
-  console.log("y", y);
-  //  draw based on dropdown value
+  const { x, y } = getXY(e, canvas);
+
+  // draw based on dropdown value
   if (drawItemValue != "none") {
     if (drawItemValue == "point") {
       // add to list of objects
@@ -111,9 +110,25 @@ function handleMouseDown(e) {
         isDrawing = true;
       }
     } else if (drawItemValue == "triangle") {
-      objectBeingDrawn.type = "triangle";
-      objectBeingDrawn.x1 = x;
-      objectBeingDrawn.y1 = y;
+      // initiate drawing triangle
+      if (isDrawing) {
+        // if x2 and y2 is not defined
+        if (objectBeingDrawn.x2 == null) {
+          objectBeingDrawn.x2 = x;
+          objectBeingDrawn.y2 = y;
+        } else if (objectBeingDrawn.x3 == null) {
+          objectBeingDrawn.x3 = x;
+          objectBeingDrawn.y3 = y;
+          isFinishDrawing();
+          isDrawing = false;
+        }
+      } else {
+        // start drawing triangle
+        objectBeingDrawn.type = "triangle";
+        objectBeingDrawn.x1 = x;
+        objectBeingDrawn.y1 = y;
+        isDrawing = true;
+      }
     }
     rerender();
     updateObjectList();
@@ -240,14 +255,6 @@ function setProperties() {
   }
 }
 
-function getXY(e) {
-  let x = e.clientX;
-  let y = e.clientY;
-  let rect = e.target.getBoundingClientRect();
-  x = (x - rect.left - canvas.width / 2) / (canvas.width / 2);
-  y = (canvas.height / 2 - (y - rect.top)) / (canvas.height / 2);
-  return { x, y };
-}
 // main
 setBackground("#000000", 0);
 

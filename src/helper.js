@@ -239,6 +239,9 @@ function setOffset() {
     if (drawnItems[i].type == "line") {
       offset += 4;
     }
+    if (drawnItems[i].type == "triangle") {
+      offset += 6;
+    }
   }
   return offset;
 }
@@ -284,8 +287,9 @@ function drawObject(object) {
   } else if (object.type == "line") {
     line(object.x1, object.y1, object.x2, object.y2);
   } else if (object.type == "triangle") {
-    triangle(object.x1, object.y1, object.x2, object.y2, object.x3, object.y3);
+    triangle([object.x1, object.y1, object.x2, object.y2, object.x3, object.y3]);
   }
   drawnItems.push(object);
 }
+
 export { rerender, createCanvas, isFinishDrawing, objectToBeDrawn, background, objectBeingDrawn };

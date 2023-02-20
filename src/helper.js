@@ -24,13 +24,7 @@ function createCanvas(height = 1000, width = 1000) {
   document.getElementById("root").appendChild(canvas);
   gl = canvas.getContext("webgl");
 
-  canvas.onmouseenter = handleMouseHover;
   return document.getElementById("canvas");
-}
-
-function handleMouseHover(e) {
-  // change cursor to crosshair
-  canvas.style.cursor = "crosshair";
 }
 
 function objectToPixel(vertex_buffer, Index_Buffer) {

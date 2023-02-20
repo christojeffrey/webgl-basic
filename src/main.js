@@ -1,4 +1,3 @@
-import { background } from "./helper.js";
 import { createCanvas, rerender, createPoint, objectToBeDrawn, setBackground } from "./mainInterface.js";
 
 /*============== Creating a canvas ====================*/
@@ -7,13 +6,20 @@ let canvas = createCanvas(1000, 1400);
 // listen for drawItem id dropdown value
 let drawItem = document.getElementById("drawItem");
 let objectList = document.getElementById("objectList");
-
 let drawItemValue = "none";
 drawItem.addEventListener("change", function () {
   drawItemValue = drawItem.value;
   console.log(drawItemValue);
 });
+
+// handle mouse events
 canvas.onmousedown = handleMouseDown;
+canvas.onmouseenter = handleMouseHover;
+
+function handleMouseHover(e) {
+  // change cursor to crosshair
+  canvas.style.cursor = "crosshair";
+}
 
 function handleMouseDown(e) {
   let x = e.clientX;
@@ -36,6 +42,7 @@ function handleMouseDown(e) {
   }
 }
 
+// update UI
 // add li to objectList from objectToBeDrawn
 // update objectList
 function updateObjectList() {
@@ -47,8 +54,11 @@ function updateObjectList() {
   }
 }
 
+// main
+setBackground(0.0, 0.0, 0.0, 0.0);
+
 createPoint(0.4, 0.0);
 createPoint(0.8, 0.0);
-setBackground(0.0, 0.0, 0.0, 0.0);
+
 rerender();
 updateObjectList();

@@ -64,15 +64,16 @@ function setOffset() {
       }
       offset += count;
     }
+
     if (drawnItems[i].type == "polygon") {
       // an array of triangles
       for (let j = 0; j < drawnItems[i].triangles.length; j++) {
         // consists of array of 3 points
-        console.log("drawnItems[i].triangles[j]", drawnItems[i].triangles[j]);
         offset += 6;
       }
     }
   }
+  console.log("calculated offset", offset);
   return offset;
 }
 
@@ -233,12 +234,16 @@ function drawTriangle() {
 
 // polygon
 function polygon(triangles) {
+  drawnItems.push({
+    type: "polygon",
+    triangles: [],
+  });
+
   // draw many triangles
   let drawnTriangles = [];
   for (let i = 0; i < triangles.length; i++) {
     // flatten
     let toBeDrawn = triangles[i].flat();
-    console.log("to be drawn", triangles[i]);
     let x1 = toBeDrawn[0];
     let y1 = toBeDrawn[1];
     let x2 = toBeDrawn[2];
@@ -267,6 +272,8 @@ function polygon(triangles) {
     objectToPixel(vertex_buffer, Index_Buffer);
 
     drawTriangle();
+
+    // update drawnItems
     drawnTriangles.push(triangles[i]);
     drawnItems.pop();
     drawnItems.push({
@@ -274,6 +281,7 @@ function polygon(triangles) {
       triangles: drawnTriangles,
     });
   }
+  drawnItems.pop();
 }
 
 // line
@@ -327,17 +335,13 @@ function drawObject(object) {
   } else if (object.type == "line") {
     line(object.x1, object.y1, object.x2, object.y2);
   } else if (object.type == "triangle") {
-    // if x3, y3 is not defined, draw a line instead
+    // to handle animation, if x3, y3 is not defined, draw a line instead
     if (object.x3 == undefined || object.y3 == undefined) {
       line(object.x1, object.y1, object.x2, object.y2);
     } else {
       triangle([object.x1, object.y1, object.x2, object.y2, object.x3, object.y3]);
     }
   } else if (object.type == "polygon") {
-    drawnItems.push({
-      type: "polygon",
-      triangles: [],
-    });
     polygon(object.triangles);
   }
   drawnItems.push(object);

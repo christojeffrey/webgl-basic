@@ -285,9 +285,8 @@ setBackground("#000000", 0);
 createPolygon([
   [-0.5, -0.5],
   [0.5, -0.5],
-  [0.5, 0.5],
   [-0.5, 0.5],
-  [1.0, 0.0],
+  [0.5, 0.5],
 ]);
 rerender();
 updateObjectList();

@@ -3,7 +3,7 @@ import { createCanvas, rerender, createPoint, setBackground, isFinishDrawing, cr
 const TOLERANCE = 0.01;
 
 let objectToBeMoved = null;
-let isClicked = false;
+let isDragging = false;
 let clickedIndex = null;
 let isDrawing = false;
 
@@ -29,12 +29,12 @@ canvas.onmousemove = handleMouseMove;
 canvas.onmouseup = handleMouseUp;
 
 function handleMouseUp(e) {
-  isClicked = false;
+  isDragging = false;
   objectToBeMoved = null;
 }
 
 function handleMouseMove(e) {
-  if (isClicked) {
+  if (isDragging) {
     // handle drag and drop
     const { x, y } = getXY(e);
 
@@ -66,6 +66,18 @@ function handleMouseMove(e) {
       }
     }
   }
+  // adding animation when drawing
+
+  if (isDrawing) {
+    const { x, y } = getXY(e);
+    if (drawItemValue == "line") {
+      // on the proccess drawing line
+      objectBeingDrawn.x2 = x;
+      objectBeingDrawn.y2 = y;
+    } else if (drawItemValue == "triangle") {
+    }
+    rerender();
+  }
 }
 
 function handleMouseHover(_) {
@@ -74,7 +86,7 @@ function handleMouseHover(_) {
 }
 
 function handleMouseDown(e) {
-  isClicked = true;
+  isDragging = true;
   const { x, y } = getXY(e);
   console.log("x", x);
   console.log("y", y);

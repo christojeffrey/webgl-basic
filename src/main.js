@@ -1,11 +1,11 @@
-import { createCanvas, rerender, createPoint, objectToBeDrawn, setBackground, createLine } from "./mainInterface.js";
+import { createCanvas, rerender, createPoint, setBackground, isFinishDrawing, createLine, objectToBeDrawn, objectBeingDrawn } from "./mainInterface.js";
 
 const TOLERANCE = 0.01;
 
-let objectBeingDrawn = null;
 let objectToBeMoved = null;
 let isClicked = false;
 let clickedIndex = null;
+let isDrawing = false;
 
 /*============== Creating a canvas ====================*/
 let canvas = createCanvas(1000, 1200);
@@ -36,11 +36,7 @@ function handleMouseUp(e) {
 function handleMouseMove(e) {
   if (isClicked) {
     // handle drag and drop
-    let x = e.clientX;
-    let y = e.clientY;
-    let rect = e.target.getBoundingClientRect();
-    x = (x - rect.left - canvas.width / 2) / (canvas.width / 2);
-    y = (canvas.height / 2 - (y - rect.top)) / (canvas.height / 2);
+    const { x, y } = getXY(e);
 
     //  draw based on dropdown value
     if (drawItemValue == "none") {
@@ -68,16 +64,6 @@ function handleMouseMove(e) {
 
         rerender();
       }
-    } else {
-      if (drawItemValue == "line") {
-        objectBeingDrawn.x2 = x;
-        objectBeingDrawn.y2 = y;
-        // pop previous line, add new line
-        objectToBeDrawn.pop();
-        objectToBeDrawn.push(objectBeingDrawn);
-
-        rerender();
-      }
     }
   }
 }
@@ -89,11 +75,7 @@ function handleMouseHover(_) {
 
 function handleMouseDown(e) {
   isClicked = true;
-  let x = e.clientX;
-  let y = e.clientY;
-  let rect = e.target.getBoundingClientRect();
-  x = (x - rect.left - canvas.width / 2) / (canvas.width / 2);
-  y = (canvas.height / 2 - (y - rect.top)) / (canvas.height / 2);
+  const { x, y } = getXY(e);
   console.log("x", x);
   console.log("y", y);
   //  draw based on dropdown value
@@ -102,12 +84,24 @@ function handleMouseDown(e) {
       // add to list of objects
       createPoint(x, y);
     } else if (drawItemValue == "line") {
-      objectBeingDrawn = {
-        type: "line",
-        x1: x,
-        y1: y,
-      };
-      objectToBeDrawn.push(objectBeingDrawn);
+      // initiate drawing line
+      if (isDrawing) {
+        // finish drawing line
+        objectBeingDrawn.x2 = x;
+        objectBeingDrawn.y2 = y;
+        isFinishDrawing();
+        isDrawing = false;
+      } else {
+        // start drawing line
+        objectBeingDrawn.type = "line";
+        objectBeingDrawn.x1 = x;
+        objectBeingDrawn.y1 = y;
+        isDrawing = true;
+      }
+    } else if (drawItemValue == "triangle") {
+      objectBeingDrawn.type = "triangle";
+      objectBeingDrawn.x1 = x;
+      objectBeingDrawn.y1 = y;
     }
     rerender();
     updateObjectList();
@@ -115,10 +109,9 @@ function handleMouseDown(e) {
 }
 
 // update UI
-// add li to objectList from objectToBeDrawn
-// update objectList
-
+// update objectList on left nav
 function updateObjectList() {
+  // add li to objectList from objectToBeDrawn
   objectList.innerHTML = "";
   for (let i = 0; i < objectToBeDrawn.length; i++) {
     let li = document.createElement("li");
@@ -133,6 +126,7 @@ function updateObjectList() {
   }
 }
 
+// set properties on right nav
 function setProperties() {
   // set properties based on clickedIndex
   let html;
@@ -234,11 +228,20 @@ function setProperties() {
   }
 }
 
+function getXY(e) {
+  let x = e.clientX;
+  let y = e.clientY;
+  let rect = e.target.getBoundingClientRect();
+  x = (x - rect.left - canvas.width / 2) / (canvas.width / 2);
+  y = (canvas.height / 2 - (y - rect.top)) / (canvas.height / 2);
+  return { x, y };
+}
 // main
-setBackground(0.0, 0.0, 0.0, 0.0);
+setBackground("#000000", 0);
 
 createPoint(0.4, 0.0);
 createPoint(0.8, 0.0, "#FFFF00");
 createLine(0.4, 0.0, 0.8, 0.0);
+
 rerender();
 updateObjectList();

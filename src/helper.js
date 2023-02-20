@@ -1,5 +1,5 @@
 import { triangulate, convexHull, removeUnusedPoints } from "./polygonHelper.js";
-
+import { colorHexToRgb } from "./utils.js";
 // global variables
 let canvas;
 let gl;
@@ -13,8 +13,9 @@ let indexes = [];
 let drawnItems = [];
 
 // exposed variables
-let background = [];
+let background = { colorHex: "#FFFFFF", a: 0 };
 let objectToBeDrawn = [];
+let objectBeingDrawn = {};
 
 function createCanvas(height = 1000, width = 1000) {
   canvas = document.createElement("canvas");
@@ -30,8 +31,16 @@ function createCanvas(height = 1000, width = 1000) {
 function objectToPixel(vertex_buffer, Index_Buffer, colorHex = "#000000") {
   const { r, g, b } = colorHexToRgb(colorHex);
   const a = 1;
+  const pointSize = 10;
   // vertex shader source code
-  var vertCode = "attribute vec3 coordinates;" + "void main(void) {" + " gl_Position = vec4(coordinates, 1.0);" + "gl_PointSize = 10.0;" + "}";
+
+  var vertCode = `
+  attribute vec3 coordinates;
+  void main(void) {
+    gl_Position = vec4(coordinates, 1.0);
+    gl_PointSize = ${pointSize}.0;
+        
+  }`;
 
   // vertex shader with stroke
   // Create a vertex shader object
@@ -91,12 +100,8 @@ function objectToPixel(vertex_buffer, Index_Buffer, colorHex = "#000000") {
 
 function drawBackground() {
   // set color from 0...255 to 0...1
-  let r = background[0] / 255;
-  let g = background[1] / 255;
-  let b = background[2] / 255;
-  let a = background[3];
-
-  console.log("background", r, g, b, a);
+  const { r, g, b } = colorHexToRgb(background.colorHex);
+  const a = 0.0;
 
   gl.clearColor(r, g, b, a);
   gl.clear(gl.COLOR_BUFFER_BIT);
@@ -258,28 +263,29 @@ function rerender() {
 
   // draw based on objectToBeDrawn
   for (let i = 0; i < objectToBeDrawn.length; i++) {
-    console.log("drawing item", objectToBeDrawn[i]);
-    console.log("points", points);
-    console.log("indexes", indexes);
-    let item = objectToBeDrawn[i];
-    if (item.type == "point") {
-      point(item.x, item.y, item.colorHex);
-    } else if (item.type == "line") {
-      line(item.x1, item.y1, item.x2, item.y2);
-    } else if (item.type == "triangle") {
-      triangle(item.x1, item.y1, item.x2, item.y2, item.x3, item.y3);
-    }
-    drawnItems.push(item);
+    drawObject(objectToBeDrawn[i]);
+  }
+  // draw based on objectBeingDrawn
+  if (objectBeingDrawn) {
+    drawObject(objectBeingDrawn);
   }
 }
 
-function colorHexToRgb(hex) {
-  console.log("hex", hex);
-  let r = parseInt(hex.slice(1, 3), 16) / 255;
-  let g = parseInt(hex.slice(3, 5), 16) / 255;
-  let b = parseInt(hex.slice(5, 7), 16) / 255;
-  console.log("rgb", r, g, b);
-  return { r, g, b };
+function isFinishDrawing() {
+  // update objectToBeDrawn, objectBeingDrawn
+  if (objectBeingDrawn) {
+    objectToBeDrawn.push(objectBeingDrawn);
+    objectBeingDrawn = {};
+  }
 }
-
-export { rerender, createCanvas, objectToBeDrawn, background, colorHexToRgb };
+function drawObject(object) {
+  if (object.type == "point") {
+    point(object.x, object.y, object.colorHex);
+  } else if (object.type == "line") {
+    line(object.x1, object.y1, object.x2, object.y2);
+  } else if (object.type == "triangle") {
+    triangle(object.x1, object.y1, object.x2, object.y2, object.x3, object.y3);
+  }
+  drawnItems.push(object);
+}
+export { rerender, createCanvas, isFinishDrawing, objectToBeDrawn, background, objectBeingDrawn };

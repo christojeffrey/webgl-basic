@@ -234,6 +234,8 @@ function drawTriangle() {
 
 // polygon
 function polygon(triangles) {
+  // setup temporary drawnItems.
+  // only need to do this to polygon, since it's created using multiple triangles. which made the offset changes while it is being drawn.
   drawnItems.push({
     type: "polygon",
     triangles: [],

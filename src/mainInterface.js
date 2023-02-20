@@ -1,6 +1,10 @@
-import { rerender, createCanvas, objectToBeDrawn } from "./helper.js";
+import { rerender, createCanvas, objectToBeDrawn, background } from "./helper.js";
 function createPoint(x, y) {
   objectToBeDrawn.push({ type: "point", x, y });
 }
 
-export { createPoint, rerender, createCanvas, objectToBeDrawn };
+function setBackground(r, g, b, a) {
+  background.push(r, g, b, a);
+}
+
+export { createPoint, rerender, createCanvas, objectToBeDrawn, setBackground };

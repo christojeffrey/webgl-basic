@@ -1,7 +1,8 @@
-import { createCanvas, rerender, createPoint, objectToBeDrawn } from "./mainInterface.js";
+import { background } from "./helper.js";
+import { createCanvas, rerender, createPoint, objectToBeDrawn, setBackground } from "./mainInterface.js";
 
 /*============== Creating a canvas ====================*/
-let canvas = createCanvas(1000, 1000);
+let canvas = createCanvas(1000, 1400);
 
 // listen for drawItem id dropdown value
 let drawItem = document.getElementById("drawItem");
@@ -48,6 +49,6 @@ function updateObjectList() {
 
 createPoint(0.4, 0.0);
 createPoint(0.8, 0.0);
-
+setBackground(0.0, 0.0, 0.0, 0.0);
 rerender();
 updateObjectList();

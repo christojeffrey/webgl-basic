@@ -64,6 +64,14 @@ function setOffset() {
       }
       offset += count;
     }
+    if (drawnItems[i].type == "polygon") {
+      // an array of triangles
+      for (let j = 0; j < drawnItems[i].triangles.length; j++) {
+        // consists of array of 3 points
+        console.log("drawnItems[i].triangles[j]", drawnItems[i].triangles[j]);
+        offset += 6;
+      }
+    }
   }
   return offset;
 }
@@ -219,26 +227,52 @@ function triangle([x1, y1, x2, y2, x3, y3], lined = false) {
 function drawTriangle() {
   // Draw triangle
   let offset = setOffset();
+  console.log("drawing triangle with offset", offset, "and length", 3, "and type", "UNSIGNED_SHORT");
   gl.drawElements(gl.TRIANGLES, 3, gl.UNSIGNED_SHORT, offset);
 }
 
 // polygon
-function polygon(points) {
-  // filter with convex hull
-  points = convexHull(points);
-  points = removeUnusedPoints(points);
-
-  // for each point, draw a point
-  // for (let i = 0; i < points.length; i++) {
-  //   point(points[i][0], points[i][1]);
-  // }
-  let triangles = triangulate(points);
+function polygon(triangles) {
+  // draw many triangles
+  let drawnTriangles = [];
   for (let i = 0; i < triangles.length; i++) {
     // flatten
-    triangles[i] = triangles[i].flat();
-    console.log("drawn", triangles[i]);
+    let toBeDrawn = triangles[i].flat();
+    console.log("to be drawn", triangles[i]);
+    let x1 = toBeDrawn[0];
+    let y1 = toBeDrawn[1];
+    let x2 = toBeDrawn[2];
+    let y2 = toBeDrawn[3];
+    let x3 = toBeDrawn[4];
+    let y3 = toBeDrawn[5];
+
     // if (i == 0) continue;
-    triangle(triangles[i], false);
+    if (!vertex_buffer) {
+      vertex_buffer = gl.createBuffer();
+    }
+    if (!Index_Buffer) {
+      Index_Buffer = gl.createBuffer();
+    }
+    points = [...points, x1, y1, 0.0, x2, y2, 0.0, x3, y3, 0.0];
+    indexes = [...indexes, points.length / 3 - 3, points.length / 3 - 2, points.length / 3 - 1];
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(points), gl.STATIC_DRAW);
+    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, Index_Buffer);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indexes), gl.STATIC_DRAW);
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
+
+    objectToPixel(vertex_buffer, Index_Buffer);
+
+    drawTriangle();
+    drawnTriangles.push(triangles[i]);
+    drawnItems.pop();
+    drawnItems.push({
+      type: "polygon",
+      triangles: drawnTriangles,
+    });
   }
 }
 
@@ -299,6 +333,12 @@ function drawObject(object) {
     } else {
       triangle([object.x1, object.y1, object.x2, object.y2, object.x3, object.y3]);
     }
+  } else if (object.type == "polygon") {
+    drawnItems.push({
+      type: "polygon",
+      triangles: [],
+    });
+    polygon(object.triangles);
   }
   drawnItems.push(object);
 }

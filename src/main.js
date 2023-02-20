@@ -1,4 +1,4 @@
-import { createCanvas, rerender, cancelDrawing, createPoint, setBackground, finishDrawing, createLine, objectToBeDrawn, objectBeingDrawn } from "./mainInterface.js";
+import { createCanvas, rerender, cancelDrawing, createPoint, setBackground, finishDrawing, createPolygon, createLine, objectToBeDrawn, objectBeingDrawn } from "./mainInterface.js";
 import { getXY } from "./utils.js";
 
 const TOLERANCE = 0.01;
@@ -278,9 +278,16 @@ document.addEventListener("keydown", function (e) {
 // main
 setBackground("#000000", 0);
 
-createPoint(0.4, 0.0);
-createPoint(0.8, 0.0, "#FFFF00");
-createLine(0.4, 0.0, 0.8, 0.0);
+// createPoint(0.4, 0.0);
+// createPoint(0.8, 0.0, "#FFFF00");
+// createLine(0.4, 0.0, 0.8, 0.0);
 
+createPolygon([
+  [-0.5, -0.5],
+  [0.5, -0.5],
+  [0.5, 0.5],
+  [-0.5, 0.5],
+  [1.0, 0.0],
+]);
 rerender();
 updateObjectList();

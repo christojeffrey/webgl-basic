@@ -27,7 +27,9 @@ function createCanvas(height = 1000, width = 1000) {
   return document.getElementById("canvas");
 }
 
-function objectToPixel(vertex_buffer, Index_Buffer, r = 0, g = 0, b = 0, a = 1.0) {
+function objectToPixel(vertex_buffer, Index_Buffer, colorHex = "#000000") {
+  const { r, g, b } = colorHexToRgb(colorHex);
+  const a = 1;
   // vertex shader source code
   var vertCode = "attribute vec3 coordinates;" + "void main(void) {" + " gl_Position = vec4(coordinates, 1.0);" + "gl_PointSize = 10.0;" + "}";
 
@@ -101,7 +103,7 @@ function drawBackground() {
 }
 
 // point
-function point(x, y, r = 0, g = 0, b = 0, a = 1) {
+function point(x, y, colorHex) {
   // create point in memory
   if (!vertex_buffer) {
     vertex_buffer = gl.createBuffer();
@@ -123,7 +125,7 @@ function point(x, y, r = 0, g = 0, b = 0, a = 1) {
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
 
   //   transform to pixel
-  objectToPixel(vertex_buffer, Index_Buffer, r, g, b, a);
+  objectToPixel(vertex_buffer, Index_Buffer, colorHex);
 
   //   draw
   drawPoint();
@@ -261,7 +263,7 @@ function rerender() {
     console.log("indexes", indexes);
     let item = objectToBeDrawn[i];
     if (item.type == "point") {
-      point(item.x, item.y, item.color.r, item.color.g, item.color.b, item.color.a);
+      point(item.x, item.y, item.colorHex);
     } else if (item.type == "line") {
       line(item.x1, item.y1, item.x2, item.y2);
     } else if (item.type == "triangle") {
@@ -271,4 +273,13 @@ function rerender() {
   }
 }
 
-export { rerender, createCanvas, objectToBeDrawn, background };
+function colorHexToRgb(hex) {
+  console.log("hex", hex);
+  let r = parseInt(hex.slice(1, 3), 16) / 255;
+  let g = parseInt(hex.slice(3, 5), 16) / 255;
+  let b = parseInt(hex.slice(5, 7), 16) / 255;
+  console.log("rgb", r, g, b);
+  return { r, g, b };
+}
+
+export { rerender, createCanvas, objectToBeDrawn, background, colorHexToRgb };

@@ -1,7 +1,7 @@
 import { createCanvas, rerender, createPoint, objectToBeDrawn, setBackground, createLine } from "./mainInterface.js";
 
 /*============== Creating a canvas ====================*/
-let canvas = createCanvas(1000, 1400);
+let canvas = createCanvas(1000, 1200);
 
 // listen for drawItem id dropdown value
 let drawItem = document.getElementById("drawItem");
@@ -87,12 +87,67 @@ function handleMouseDown(e) {
 // update UI
 // add li to objectList from objectToBeDrawn
 // update objectList
+
+let clickedIndex = null;
 function updateObjectList() {
   objectList.innerHTML = "";
   for (let i = 0; i < objectToBeDrawn.length; i++) {
     let li = document.createElement("li");
     li.innerHTML = objectToBeDrawn[i].type;
+    li.setAttribute("data-index", i);
+    li.addEventListener("click", function (e) {
+      clickedIndex = e.target.getAttribute("data-index");
+      console.log(clickedIndex);
+      setProperties();
+    });
     objectList.appendChild(li);
+  }
+}
+
+function setProperties() {
+  // set properties based on clickedIndex
+  let html;
+
+  if (objectToBeDrawn[clickedIndex].type == "point") {
+    let x = objectToBeDrawn[clickedIndex].x;
+    let y = objectToBeDrawn[clickedIndex].y;
+    let rgba = objectToBeDrawn[clickedIndex].color;
+    html = `
+    <form id="pointProperties">
+      <div id="properties-title">
+        <h3>Point Properties</h3>
+      </div>
+      <div>
+        <label for="x">x</label>
+        <input id="x" value=${x} />
+      </div>
+      <div>
+        <label for="y">y</label>
+        <input id="y" value=${y} />
+      </div>
+      <div>
+      <input type="color" id="colorHex" name="favcolor" value="#ff0000">
+      </div>
+      <input type="submit">
+      </form>
+    `;
+    let properties = document.getElementById("properties");
+    properties.innerHTML = html;
+
+    // add event listener to form
+    let form = document.getElementById("pointProperties");
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      let x = document.getElementById("x").value;
+      let y = document.getElementById("y").value;
+      let colorHex = document.getElementById("colorHex").value;
+      objectToBeDrawn[clickedIndex].x = x;
+      objectToBeDrawn[clickedIndex].y = y;
+      console.log("colorHex", colorHex);
+      objectToBeDrawn[clickedIndex].colorHex = colorHex;
+      rerender();
+    });
+  } else if (objectToBeDrawn[clickedIndex].type == "line") {
   }
 }
 
@@ -100,7 +155,7 @@ function updateObjectList() {
 setBackground(0.0, 0.0, 0.0, 0.0);
 
 createPoint(0.4, 0.0);
-createPoint(0.8, 0.0, 0.0, 1.0, 0.0, 1.0);
+createPoint(0.8, 0.0, "#FFFF00");
 createLine(0.4, 0.0, 0.8, 0.0);
 rerender();
 updateObjectList();

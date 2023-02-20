@@ -1,15 +1,10 @@
 import { rerender, createCanvas, objectToBeDrawn, background } from "./helper.js";
-function createPoint(x, y, r, g, b, a) {
+function createPoint(x, y, colorHex) {
   objectToBeDrawn.push({
     type: "point",
     x,
     y,
-    color: {
-      r,
-      g,
-      b,
-      a,
-    },
+    colorHex,
   });
 }
 

@@ -58,7 +58,7 @@ function updateObjectList() {
 setBackground(0.0, 0.0, 0.0, 0.0);
 
 createPoint(0.4, 0.0);
-createPoint(0.8, 0.0);
+createPoint(0.8, 0.0, 0.0, 1.0, 0.0, 1.0);
 
 rerender();
 updateObjectList();

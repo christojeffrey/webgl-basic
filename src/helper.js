@@ -27,7 +27,7 @@ function createCanvas(height = 1000, width = 1000) {
   return document.getElementById("canvas");
 }
 
-function objectToPixel(vertex_buffer, Index_Buffer) {
+function objectToPixel(vertex_buffer, Index_Buffer, r = 0, g = 0, b = 0, a = 1.0) {
   // vertex shader source code
   var vertCode = "attribute vec3 coordinates;" + "void main(void) {" + " gl_Position = vec4(coordinates, 1.0);" + "gl_PointSize = 10.0;" + "}";
 
@@ -42,7 +42,7 @@ function objectToPixel(vertex_buffer, Index_Buffer) {
   gl.compileShader(vertShader);
 
   // fragment shader source code
-  var fragCode = "void main(void) {" + " gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);" + "}";
+  var fragCode = "void main(void) {" + " gl_FragColor = vec4(" + r + ", " + g + ", " + b + ", " + a + ");" + "}";
 
   // Create fragment shader object
   var fragShader = gl.createShader(gl.FRAGMENT_SHADER);
@@ -101,7 +101,7 @@ function drawBackground() {
 }
 
 // point
-function point(x, y) {
+function point(x, y, r = 0, g = 0, b = 0, a = 1) {
   // create point in memory
   if (!vertex_buffer) {
     vertex_buffer = gl.createBuffer();
@@ -123,7 +123,7 @@ function point(x, y) {
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
 
   //   transform to pixel
-  objectToPixel(vertex_buffer, Index_Buffer);
+  objectToPixel(vertex_buffer, Index_Buffer, r, g, b, a);
 
   //   draw
   drawPoint();
@@ -235,6 +235,7 @@ function setOffset() {
   }
   return offset;
 }
+
 function drawLine() {
   // Draw line
   // gl.drawElements({ mode: gl.LINES, count: indexes.length, type: gl.UNSIGNED_SHORT, offset: 0 });
@@ -260,7 +261,7 @@ function rerender() {
     console.log("indexes", indexes);
     let item = objectToBeDrawn[i];
     if (item.type == "point") {
-      point(item.x, item.y);
+      point(item.x, item.y, item.color.r, item.color.g, item.color.b, item.color.a);
     } else if (item.type == "line") {
       line(item.x1, item.y1, item.x2, item.y2);
     } else if (item.type == "triangle") {
@@ -269,4 +270,5 @@ function rerender() {
     drawnItems.push(item);
   }
 }
-export { createCanvas, point, background, triangle, polygon, line, triangulate, objectToBeDrawn, convexHull, removeUnusedPoints, rerender };
+
+export { rerender, createCanvas, objectToBeDrawn, background };

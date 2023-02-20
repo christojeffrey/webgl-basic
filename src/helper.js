@@ -28,6 +28,46 @@ function createCanvas(height = 1000, width = 1000) {
   return document.getElementById("canvas");
 }
 
+// rasterizer
+function setOffset() {
+  let offset = 0;
+  console.log("calculating offset..", drawnItems.length);
+  for (let i = 0; i < drawnItems.length; i++) {
+    console.log("drawnItems[i].type", drawnItems[i].type);
+    if (drawnItems[i].type == "point") {
+      offset += 2;
+    }
+    if (drawnItems[i].type == "line") {
+      offset += 4;
+    }
+    if (drawnItems[i].type == "triangle") {
+      // for each non null x1, x2, x3, y1, y2, y3, add 1
+      let count = 0;
+      if (drawnItems[i].x1 != null) {
+        count++;
+      }
+      if (drawnItems[i].x2 != null) {
+        count++;
+      }
+      if (drawnItems[i].x3 != null) {
+        count++;
+      }
+
+      if (drawnItems[i].y1 != null) {
+        count++;
+      }
+      if (drawnItems[i].y2 != null) {
+        count++;
+      }
+      if (drawnItems[i].y3 != null) {
+        count++;
+      }
+      offset += count;
+    }
+  }
+  return offset;
+}
+
 function objectToPixel(vertex_buffer, Index_Buffer, colorHex = "#000000") {
   const { r, g, b } = colorHexToRgb(colorHex);
   const a = 1;
@@ -98,6 +138,7 @@ function objectToPixel(vertex_buffer, Index_Buffer, colorHex = "#000000") {
   gl.enableVertexAttribArray(coord);
 }
 
+// background
 function drawBackground() {
   // set color from 0...255 to 0...1
   const { r, g, b } = colorHexToRgb(background.colorHex);
@@ -228,24 +269,6 @@ function line(x1, y1, x2, y2) {
   drawLine();
 }
 
-function setOffset() {
-  let offset = 0;
-  console.log("calculating offset..", drawnItems.length);
-  for (let i = 0; i < drawnItems.length; i++) {
-    console.log("drawnItems[i].type", drawnItems[i].type);
-    if (drawnItems[i].type == "point") {
-      offset += 2;
-    }
-    if (drawnItems[i].type == "line") {
-      offset += 4;
-    }
-    if (drawnItems[i].type == "triangle") {
-      offset += 6;
-    }
-  }
-  return offset;
-}
-
 function drawLine() {
   // Draw line
   // gl.drawElements({ mode: gl.LINES, count: indexes.length, type: gl.UNSIGNED_SHORT, offset: 0 });
@@ -255,6 +278,36 @@ function drawLine() {
   gl.drawElements(gl.LINES, 2, gl.UNSIGNED_SHORT, offset);
 }
 
+// drawing helper
+function finishDrawing() {
+  // update objectToBeDrawn, objectBeingDrawn
+  if (objectBeingDrawn) {
+    objectToBeDrawn.push(objectBeingDrawn);
+    objectBeingDrawn = {};
+  }
+}
+
+function drawObject(object) {
+  if (object.type == "point") {
+    point(object.x, object.y, object.colorHex);
+  } else if (object.type == "line") {
+    line(object.x1, object.y1, object.x2, object.y2);
+  } else if (object.type == "triangle") {
+    // if x3, y3 is not defined, draw a line instead
+    if (object.x3 == undefined || object.y3 == undefined) {
+      line(object.x1, object.y1, object.x2, object.y2);
+    } else {
+      triangle([object.x1, object.y1, object.x2, object.y2, object.x3, object.y3]);
+    }
+  }
+  drawnItems.push(object);
+}
+
+function cancelDrawing() {
+  objectBeingDrawn = {};
+}
+
+// drawer
 function rerender() {
   console.log("======================================");
   drawBackground();
@@ -273,26 +326,4 @@ function rerender() {
     drawObject(objectBeingDrawn);
   }
 }
-
-function finishDrawing() {
-  // update objectToBeDrawn, objectBeingDrawn
-  if (objectBeingDrawn) {
-    objectToBeDrawn.push(objectBeingDrawn);
-    objectBeingDrawn = {};
-  }
-}
-function drawObject(object) {
-  if (object.type == "point") {
-    point(object.x, object.y, object.colorHex);
-  } else if (object.type == "line") {
-    line(object.x1, object.y1, object.x2, object.y2);
-  } else if (object.type == "triangle") {
-    triangle([object.x1, object.y1, object.x2, object.y2, object.x3, object.y3]);
-  }
-  drawnItems.push(object);
-}
-function cancelDrawing() {
-  objectBeingDrawn = {};
-}
-
 export { rerender, createCanvas, finishDrawing, cancelDrawing, objectToBeDrawn, background, objectBeingDrawn };

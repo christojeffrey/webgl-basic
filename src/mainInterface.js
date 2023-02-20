@@ -13,13 +13,14 @@ function setBackground(colorHex, a) {
   background.a = a;
 }
 
-function createLine(x1, y1, x2, y2) {
+function createLine(x1, y1, x2, y2, colorHex) {
   objectToBeDrawn.push({
     type: "line",
     x1,
     y1,
     x2,
     y2,
+    colorHex,
   });
 }
 export { createPoint, rerender, createCanvas, setBackground, createLine, finishDrawing, cancelDrawing, objectToBeDrawn, objectBeingDrawn };

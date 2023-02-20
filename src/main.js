@@ -7,7 +7,7 @@ let objectToBeMoved = null;
 let isDragging = false;
 let clickedIndex = null;
 let isDrawing = false;
-
+let verticesDrawn = 0;
 /*============== Creating a canvas ====================*/
 let canvas = createCanvas(1000, 1200);
 
@@ -68,14 +68,22 @@ function handleMouseMove(e) {
     }
   }
   // adding animation when drawing
-
-  if (isDrawing) {
+  if (verticesDrawn != 0) {
     const { x, y } = getXY(e, canvas);
     if (drawItemValue == "line") {
       // on the proccess drawing line
       objectBeingDrawn.x2 = x;
       objectBeingDrawn.y2 = y;
     } else if (drawItemValue == "triangle") {
+      // on the proccess drawing triangle
+      if (verticesDrawn == 1) {
+        objectBeingDrawn.x2 = x;
+        objectBeingDrawn.y2 = y;
+      }
+      if (verticesDrawn == 2) {
+        objectBeingDrawn.x3 = x;
+        objectBeingDrawn.y3 = y;
+      }
     }
     rerender();
   }
@@ -102,39 +110,34 @@ function handleMouseDown(e) {
       break;
     case "line":
       // initiate drawing line
-      if (isDrawing) {
-        // finish drawing line
-        objectBeingDrawn.x2 = x;
-        objectBeingDrawn.y2 = y;
-        finishDrawing();
-        isDrawing = false;
-      } else {
-        // start drawing line
+      if (verticesDrawn == 0) {
         objectBeingDrawn.type = "line";
         objectBeingDrawn.x1 = x;
         objectBeingDrawn.y1 = y;
-        isDrawing = true;
+        verticesDrawn++;
+      } else if (verticesDrawn == 1) {
+        objectBeingDrawn.x2 = x;
+        objectBeingDrawn.y2 = y;
+        finishDrawing();
+        verticesDrawn = 0;
       }
       break;
     case "triangle":
       // initiate drawing triangle
-      if (isDrawing) {
-        // if x2 and y2 is not defined
-        if (objectBeingDrawn.x2 == null) {
-          objectBeingDrawn.x2 = x;
-          objectBeingDrawn.y2 = y;
-        } else if (objectBeingDrawn.x3 == null) {
-          objectBeingDrawn.x3 = x;
-          objectBeingDrawn.y3 = y;
-          finishDrawing();
-          isDrawing = false;
-        }
-      } else {
-        // start drawing triangle
+      if (verticesDrawn == 0) {
         objectBeingDrawn.type = "triangle";
         objectBeingDrawn.x1 = x;
         objectBeingDrawn.y1 = y;
-        isDrawing = true;
+        verticesDrawn++;
+      } else if (verticesDrawn == 1) {
+        objectBeingDrawn.x2 = x;
+        objectBeingDrawn.y2 = y;
+        verticesDrawn++;
+      } else if (verticesDrawn == 2) {
+        objectBeingDrawn.x3 = x;
+        objectBeingDrawn.y3 = y;
+        finishDrawing();
+        verticesDrawn = 0;
       }
       break;
   }
@@ -271,6 +274,7 @@ document.addEventListener("keydown", function (e) {
     rerender();
   }
 });
+
 // main
 setBackground("#000000", 0);
 

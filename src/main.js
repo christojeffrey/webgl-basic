@@ -13,6 +13,7 @@ drawItem.addEventListener("change", function () {
 });
 
 let objectBeingDrawn = null;
+let objectToBeMoved = null;
 
 // handle mouse events
 let isClicked = false;
@@ -25,20 +26,44 @@ canvas.onmouseup = handleMouseUp;
 
 function handleMouseUp(e) {
   isClicked = false;
+  objectToBeMoved = null;
 }
+
+const TOLERANCE = 0.01;
 
 function handleMouseMove(e) {
   if (isClicked) {
+    // handle drag and drop
     let x = e.clientX;
     let y = e.clientY;
     let rect = e.target.getBoundingClientRect();
     x = (x - rect.left - canvas.width / 2) / (canvas.width / 2);
     y = (canvas.height / 2 - (y - rect.top)) / (canvas.height / 2);
-    console.log("x", x);
-    console.log("y", y);
 
     //  draw based on dropdown value
-    if (drawItemValue != "none") {
+    if (drawItemValue == "none") {
+      // handle moving object by dragging
+      // get the object
+      if (objectToBeMoved == null) {
+        for (let i = 0; i < objectToBeDrawn.length; i++) {
+          let item = objectToBeDrawn[i];
+
+          // define where the object is
+          if (item.type == "point") {
+            if (Math.abs(item.x - x) < TOLERANCE && Math.abs(item.y - y) < TOLERANCE) {
+              objectToBeMoved = item;
+              break;
+            }
+          }
+        }
+      }
+
+      if (objectToBeMoved != null) {
+        objectToBeMoved.x = x;
+        objectToBeMoved.y = y;
+        rerender();
+      }
+    } else {
       if (drawItemValue == "line") {
         objectBeingDrawn.x2 = x;
         objectBeingDrawn.y2 = y;
@@ -111,7 +136,7 @@ function setProperties() {
   if (objectToBeDrawn[clickedIndex].type == "point") {
     let x = objectToBeDrawn[clickedIndex].x;
     let y = objectToBeDrawn[clickedIndex].y;
-    let rgba = objectToBeDrawn[clickedIndex].color;
+    let colorHex = objectToBeDrawn[clickedIndex].colorHex;
     html = `
     <form id="pointProperties">
       <div id="properties-title">
@@ -126,7 +151,7 @@ function setProperties() {
         <input id="y" value=${y} />
       </div>
       <div>
-      <input type="color" id="colorHex" name="favcolor" value="#ff0000">
+      <input type="color" id="colorHex" name="favcolor" value=${colorHex}>
       </div>
       <input type="submit">
       </form>

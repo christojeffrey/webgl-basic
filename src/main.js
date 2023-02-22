@@ -63,13 +63,30 @@ function handleMouseMove(e) {
               objectToBeMoved = item;
               clickedIndex = i;
               clickedPoint = 1;
-              console.log("TYPES: LINE 1")
               break;
             } else if (Math.abs(item.x2 - x) < TOLERANCE && Math.abs(item.y2 - y) < TOLERANCE) {
               objectToBeMoved = item;
               clickedIndex = i;
               clickedPoint = 2;
-              console.log("TYPES: LINE 2")
+              break;
+            }
+          }
+
+          if (item.type == "triangle") {
+            if (Math.abs(item.x1 - x) < TOLERANCE && Math.abs(item.y1 - y) < TOLERANCE) {
+              objectToBeMoved = item;
+              clickedIndex = i;
+              clickedPoint = 1;
+              break;
+            } else if (Math.abs(item.x2 - x) < TOLERANCE && Math.abs(item.y2 - y) < TOLERANCE) {
+              objectToBeMoved = item;
+              clickedIndex = i;
+              clickedPoint = 2;
+              break;
+            } else if (Math.abs(item.x3 - x) < TOLERANCE && Math.abs(item.y3 - y) < TOLERANCE) {
+              objectToBeMoved = item;
+              clickedIndex = i;
+              clickedPoint = 3;
               break;
             }
           }
@@ -83,14 +100,26 @@ function handleMouseMove(e) {
           setProperties();
           
           rerender();
-        }
-        else if (objectToBeMoved.type == "line") {
+        } else if (objectToBeMoved.type == "line") {
           if (clickedPoint == 1) {
             objectToBeMoved.x1 = x;
             objectToBeMoved.y1 = y;
           } else if (clickedPoint == 2) {
             objectToBeMoved.x2 = x;
             objectToBeMoved.y2 = y;
+          }
+          setProperties();
+          rerender();
+        } else if (objectToBeMoved.type == "triangle") {
+          if (clickedPoint == 1) {
+            objectToBeMoved.x1 = x;
+            objectToBeMoved.y1 = y;
+          } else if (clickedPoint == 2) {
+            objectToBeMoved.x2 = x;
+            objectToBeMoved.y2 = y;
+          } else if (clickedPoint == 3) {
+            objectToBeMoved.x3 = x;
+            objectToBeMoved.y3 = y
           }
           setProperties();
           rerender();

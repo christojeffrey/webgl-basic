@@ -6,6 +6,7 @@ const TOLERANCE = 0.01;
 let objectToBeMoved = null;
 let isDragging = false;
 let clickedIndex = null;
+let clickedPoint = null;
 let isDrawing = false;
 let verticesDrawn = 0;
 /*============== Creating a canvas ====================*/
@@ -55,15 +56,45 @@ function handleMouseMove(e) {
               break;
             }
           }
+
+          if (item.type == "line") {
+            // point 1
+            if (Math.abs(item.x1 - x) < TOLERANCE && Math.abs(item.y1 - y) < TOLERANCE) {
+              objectToBeMoved = item;
+              clickedIndex = i;
+              clickedPoint = 1;
+              console.log("TYPES: LINE 1")
+              break;
+            } else if (Math.abs(item.x2 - x) < TOLERANCE && Math.abs(item.y2 - y) < TOLERANCE) {
+              objectToBeMoved = item;
+              clickedIndex = i;
+              clickedPoint = 2;
+              console.log("TYPES: LINE 2")
+              break;
+            }
+          }
         }
       }
 
       if (objectToBeMoved != null) {
-        objectToBeMoved.x = x;
-        objectToBeMoved.y = y;
-        setProperties();
-
-        rerender();
+        if (objectToBeMoved.type == "point") {
+          objectToBeMoved.x = x;
+          objectToBeMoved.y = y;
+          setProperties();
+          
+          rerender();
+        }
+        else if (objectToBeMoved.type == "line") {
+          if (clickedPoint == 1) {
+            objectToBeMoved.x1 = x;
+            objectToBeMoved.y1 = y;
+          } else if (clickedPoint == 2) {
+            objectToBeMoved.x2 = x;
+            objectToBeMoved.y2 = y;
+          }
+          setProperties();
+          rerender();
+        }
       }
     }
   }
@@ -157,7 +188,7 @@ function updateObjectList() {
     li.setAttribute("data-index", i);
     li.addEventListener("click", function (e) {
       clickedIndex = e.target.getAttribute("data-index");
-      console.log(clickedIndex);
+      console.log("Click ", clickedIndex);
       setProperties();
     });
     objectList.appendChild(li);
@@ -237,6 +268,10 @@ function setProperties() {
       <div>
         <label for="y2">y2</label>
         <input id="y2" value=${y2} />
+      </div>
+      <div class="rotate">
+        <h4>Rotate</h4>
+        <input type="text" id="rotate" name="rotate">
       </div>
       <div>
       <input type="color" id="colorHex" name="favcolor" value=${colorHex}>

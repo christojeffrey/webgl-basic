@@ -230,6 +230,11 @@ function drawTriangle() {
   let offset = setOffset();
   console.log("drawing triangle with offset", offset, "and length", 3, "and type", "UNSIGNED_SHORT");
   gl.drawElements(gl.TRIANGLES, 3, gl.UNSIGNED_SHORT, offset);
+
+  // draw point at the triangles' vertices
+  gl.drawElements(gl.POINTS, 1, gl.UNSIGNED_SHORT, offset);
+  gl.drawElements(gl.POINTS, 1, gl.UNSIGNED_SHORT, offset + 2);
+  gl.drawElements(gl.POINTS, 1, gl.UNSIGNED_SHORT, offset + 4);
 }
 
 // polygon
@@ -320,6 +325,9 @@ function drawLine() {
   let offset = setOffset();
   console.log("offset", offset);
   gl.drawElements(gl.LINES, 2, gl.UNSIGNED_SHORT, offset);
+  // draw point at the start and end of the line
+  gl.drawElements(gl.POINTS, 1, gl.UNSIGNED_SHORT, offset);
+  gl.drawElements(gl.POINTS, 1, gl.UNSIGNED_SHORT, offset + 2);
 }
 
 // drawing helper

@@ -40,6 +40,7 @@ function createPolygon(points) {
     type: "polygon",
     triangles,
     points,
+    colorHex: "#000FF0",
   });
 }
 export { createPoint, rerender, createCanvas, setBackground, createLine, finishDrawing, cancelDrawing, createPolygon, objectToBeDrawn, objectBeingDrawn };

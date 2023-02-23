@@ -195,7 +195,7 @@ function drawPoint() {
 }
 
 // triangle
-function triangle([x1, y1, x2, y2, x3, y3], lined = false) {
+function triangle([x1, y1, x2, y2, x3, y3], colorHex) {
   if (!vertex_buffer) {
     vertex_buffer = gl.createBuffer();
   }
@@ -216,13 +216,9 @@ function triangle([x1, y1, x2, y2, x3, y3], lined = false) {
   gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indexes), gl.STATIC_DRAW);
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
 
-  objectToPixel(vertex_buffer, Index_Buffer);
+  objectToPixel(vertex_buffer, Index_Buffer, colorHex);
 
-  if (lined) {
-    drawTriangle();
-  } else {
-    drawTriangle();
-  }
+  drawTriangle();
 }
 
 function drawTriangle() {
@@ -238,7 +234,7 @@ function drawTriangle() {
 }
 
 // polygon
-function polygon(triangles) {
+function polygon(triangles, colorHex) {
   // setup temporary drawnItems.
   // only need to do this to polygon, since it's created using multiple triangles. which made the offset changes while it is being drawn.
   drawnItems.push({
@@ -276,7 +272,7 @@ function polygon(triangles) {
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indexes), gl.STATIC_DRAW);
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
 
-    objectToPixel(vertex_buffer, Index_Buffer);
+    objectToPixel(vertex_buffer, Index_Buffer, colorHex);
 
     drawTriangle();
 
@@ -349,10 +345,10 @@ function drawObject(object) {
     if (object.x3 == undefined || object.y3 == undefined) {
       line(object.x1, object.y1, object.x2, object.y2);
     } else {
-      triangle([object.x1, object.y1, object.x2, object.y2, object.x3, object.y3]);
+      triangle([object.x1, object.y1, object.x2, object.y2, object.x3, object.y3], object.colorHex);
     }
   } else if (object.type == "polygon") {
-    polygon(object.triangles);
+    polygon(object.triangles, object.colorHex);
   }
   drawnItems.push(object);
 }

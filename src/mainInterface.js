@@ -26,10 +26,16 @@ function createLine(x1, y1, x2, y2, colorHex) {
 }
 function createPolygon(points) {
   // filter with convex hull
+  console.log("points", points);
   points = convexHull(points);
+  console.log("convex hull", points);
+
   points = removeUnusedPoints(points);
+  console.log("remove unused points", points);
 
   let triangles = triangulate(points);
+
+  console.log("triangles", triangles);
   objectToBeDrawn.push({
     type: "polygon",
     triangles,

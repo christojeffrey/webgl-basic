@@ -1,6 +1,8 @@
-let iteration = 0;
 function triangulate(sides) {
+  let iteration = 0;
   // sides = [[0,0],[100,0],[100,100],[0,100]]
+  // deep copy the sides
+
   let pointsNotDrawnYet = [];
   let possiblePointsToBeDrawn = [];
   let drawnLines = [];
@@ -16,7 +18,10 @@ function triangulate(sides) {
   // while there are points that is not in the triangles, keep looping
   while (isTherePointThatIsNotInTriangle) {
     iteration++;
-    if (iteration > 10) {
+
+    // fail safe
+    if (iteration > 100000000) {
+      console.error("iteration is too high");
       break;
     }
     let trianglePointsCandidates = [];
@@ -24,14 +29,14 @@ function triangulate(sides) {
     for (let i = 0; i < possiblePointsToBeDrawn.length; i++) {
       trianglePointsCandidates.push(possiblePointsToBeDrawn[i]);
     }
-    console.log("trianglePointsCandidates before first point", trianglePointsCandidates);
+    // console.log("trianglePointsCandidates before first point", trianglePointsCandidates);
 
     let firstPoint = pointsNotDrawnYet[0];
     // remove firstPoint from possiblePointsToBeDrawn
     trianglePointsCandidates = trianglePointsCandidates.filter((point) => point !== firstPoint);
     // get a second point, then test if it intersects with any of the lines.
     // if it does, then get another point
-    console.log("trianglePointsCandidates before second point", trianglePointsCandidates);
+    // console.log("trianglePointsCandidates before second point", trianglePointsCandidates);
 
     let secondPoint;
     let secondPointCandidate;
@@ -54,7 +59,7 @@ function triangulate(sides) {
       }
 
       if (!isIntersecting) {
-        console.log("==FOUND SECOND POINT==", secondPointCandidate);
+        // console.log("==FOUND SECOND POINT==", secondPointCandidate);
         secondPoint = secondPointCandidate;
         break;
       }
@@ -66,7 +71,7 @@ function triangulate(sides) {
     // continue get a third point. check if a line that is made between the first, second, and third point intersects with any of the lines.
     let thirdPoint;
     let thirdPointCandidate;
-    console.log("trianglePointsCandidates before finding the third", trianglePointsCandidates);
+    // console.log("trianglePointsCandidates before finding the third", trianglePointsCandidates);
     for (let i = 0; i < trianglePointsCandidates.length; i++) {
       thirdPointCandidate = trianglePointsCandidates[i];
       let isIntersecting = false;
@@ -75,8 +80,7 @@ function triangulate(sides) {
         if (isInterescting(firstPoint[0], firstPoint[1], thirdPointCandidate[0], thirdPointCandidate[1], line[0][0], line[0][1], line[1][0], line[1][1])) {
           // print the two intersecting lines
           // line ... is intersecting with line ...
-          console.log("line", firstPoint, thirdPointCandidate, "is intersecting with line", line[0], line[1]);
-
+          // console.log("line", firstPoint, thirdPointCandidate, "is intersecting with line", line[0], line[1]);
           isIntersecting = true;
           break;
         }
@@ -84,7 +88,7 @@ function triangulate(sides) {
         if (isInterescting(secondPoint[0], secondPoint[1], thirdPointCandidate[0], thirdPointCandidate[1], line[0][0], line[0][1], line[1][0], line[1][1])) {
           // print the two intersecting lines
           // line ... is intersecting with line ...
-          console.log("line", secondPoint, thirdPointCandidate, "is intersecting with line", line[0], line[1]);
+          // console.log("line", secondPoint, thirdPointCandidate, "is intersecting with line", line[0], line[1]);
           isIntersecting = true;
           break;
         }
@@ -102,7 +106,7 @@ function triangulate(sides) {
       }
       if (!isIntersecting) {
         thirdPoint = thirdPointCandidate;
-        console.log("found third point", thirdPoint);
+        // console.log("found third point", thirdPoint);
         break;
       }
     }
@@ -114,7 +118,7 @@ function triangulate(sides) {
 
     drawnLines.push([firstPoint, thirdPoint]);
     drawnLines.push([secondPoint, thirdPoint]);
-    console.log("new triangle == ", firstPoint, secondPoint, thirdPoint);
+    // console.log("new triangle == ", firstPoint, secondPoint, thirdPoint);
     // add the triangle to the triangles
     // dont push if there is undefined
     // if (firstPoint && secondPoint && thirdPoint)
@@ -128,22 +132,35 @@ function triangulate(sides) {
     // update possiblePointsToBeDrawn. if there is a point that shown twice in drawnLines, then remove it from possiblePointsToBeDrawn
 
     // console.log
-    console.log("==================================");
-    console.log("triangle", triangles);
-    console.log("drawnLines", drawnLines);
-    console.log("pointsNotDrawnYet", pointsNotDrawnYet);
-    console.log("possiblePointsToBeDrawn", possiblePointsToBeDrawn);
+    // console.log("==================================");
+    // console.log("triangle", triangles);
+    // console.log("drawnLines", drawnLines);
+    // console.log("pointsNotDrawnYet", pointsNotDrawnYet);
+    // console.log("possiblePointsToBeDrawn", possiblePointsToBeDrawn);
 
     if (pointsNotDrawnYet.length === 0) {
       isTherePointThatIsNotInTriangle = false;
     }
   }
-
+  console.log("triangulated result from input", sides, "is", triangles);
   return triangles;
 }
 
-// returns true if the line from (a,b)->(c,d) intersects with (p,q)->(r,s)
+// returns true if the line from (a,b)->(c,d) intersects with (p,q)->(r,s) and the intersection is not at the end point of a line
 function isInterescting(a, b, c, d, p, q, r, s) {
+  // if one of the point is the same, then it is not intersecting
+  if (a === p && b === q) {
+    return false;
+  }
+  if (a === r && b === s) {
+    return false;
+  }
+  if (c === p && d === q) {
+    return false;
+  }
+  if (c === r && d === s) {
+    return false;
+  }
   var det, gamma, lambda;
   det = (c - a) * (s - q) - (r - p) * (d - b);
   if (det === 0) {
@@ -210,11 +227,11 @@ function orientation(p, q, r) {
 // Prints convex hull of a set of n points.
 function convexHull(points) {
   let n = points.length;
-  // There must be at least 3 points
-  if (n < 3) return;
-
   // Initialize Result
   let hull = [];
+
+  // There must be at least 3 points
+  if (n < 3) return hull;
 
   // Find the leftmost point
   let l = 0;
@@ -249,7 +266,6 @@ function convexHull(points) {
     // so that q is added to result 'hull'
     p = q;
   } while (p != l); // While we don't come to first
-  // point
 
   return hull;
 }

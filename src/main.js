@@ -1,5 +1,6 @@
 import { createCanvas, rerender, cancelDrawing, createPoint, setBackground, finishDrawing, createPolygon, createLine, objectToBeDrawn, objectBeingDrawn } from "./mainInterface.js";
 import { getXY } from "./utils.js";
+import { convexHull, removeUnusedPoints, triangulate } from "./polygonHelper.js";
 
 const TOLERANCE = 0.01;
 
@@ -7,7 +8,6 @@ let objectToBeMoved = null;
 let isDragging = false;
 let clickedIndex = null;
 let clickedPoint = null;
-let isDrawing = false;
 let verticesDrawn = 0;
 /*============== Creating a canvas ====================*/
 let canvas = createCanvas(1000, 1200);
@@ -33,6 +33,11 @@ function handleMouseUp(e) {
   isDragging = false;
   objectToBeMoved = null;
 }
+// used to change cursor
+function handleMouseHover(_) {
+  // change cursor to crosshair
+  canvas.style.cursor = "crosshair";
+}
 
 // used to handle dragging, and drawing animation
 function handleMouseMove(e) {
@@ -40,10 +45,10 @@ function handleMouseMove(e) {
     // handle drag and drop
     const { x, y } = getXY(e, canvas);
 
-    //  draw based on dropdown value
     if (drawItemValue == "none") {
-      // handle moving object by dragging
-      // get the object
+      // HANDLE MOVING OBJECT BY DRAGGING
+
+      // get the object that is being dragged
       if (objectToBeMoved == null) {
         for (let i = 0; i < objectToBeDrawn.length; i++) {
           let item = objectToBeDrawn[i];
@@ -92,13 +97,13 @@ function handleMouseMove(e) {
           }
         }
       }
-
+      // now we have the object that is being dragged. We need to move it
       if (objectToBeMoved != null) {
         if (objectToBeMoved.type == "point") {
           objectToBeMoved.x = x;
           objectToBeMoved.y = y;
+
           setProperties();
-          
           rerender();
         } else if (objectToBeMoved.type == "line") {
           if (clickedPoint == 1) {
@@ -119,7 +124,7 @@ function handleMouseMove(e) {
             objectToBeMoved.y2 = y;
           } else if (clickedPoint == 3) {
             objectToBeMoved.x3 = x;
-            objectToBeMoved.y3 = y
+            objectToBeMoved.y3 = y;
           }
           setProperties();
           rerender();
@@ -127,7 +132,7 @@ function handleMouseMove(e) {
       }
     }
   }
-  // adding animation when drawing
+  // HANDLE ANIMATION WHEN DRAWING
   if (verticesDrawn != 0) {
     const { x, y } = getXY(e, canvas);
     if (drawItemValue == "line") {
@@ -147,12 +152,6 @@ function handleMouseMove(e) {
     }
     rerender();
   }
-}
-
-// used to change cursor
-function handleMouseHover(_) {
-  // change cursor to crosshair
-  canvas.style.cursor = "crosshair";
 }
 
 // used to handle drawing object
@@ -200,6 +199,37 @@ function handleMouseDown(e) {
         verticesDrawn = 0;
       }
       break;
+    case "polygon":
+      // initiate drawing polygon
+      objectBeingDrawn.type = "polygon";
+      // create a sides array
+      if (verticesDrawn == 0) {
+        objectBeingDrawn.originalPoints = [];
+      }
+      objectBeingDrawn.originalPoints.push([x, y]);
+      // filter with convex hull
+      // add point to sides array
+
+      let points = convexHull(objectBeingDrawn.originalPoints);
+
+      points = removeUnusedPoints(points);
+      console.log("points");
+      console.log(points);
+
+      let triangles = triangulate(points);
+
+      console.log("triangles");
+      for (let i = 0; i < triangles.length; i++) {
+        console.log(triangles[i]);
+      }
+
+      objectBeingDrawn.points = points;
+      objectBeingDrawn.triangles = triangles;
+      console.log("objectBeingDrawn");
+      console.log(objectBeingDrawn);
+      verticesDrawn++;
+
+    // stop on key press enter
   }
 
   rerender();
@@ -334,8 +364,26 @@ function setProperties() {
 document.addEventListener("keydown", function (e) {
   if (e.key == "Escape") {
     cancelDrawing();
-    isDrawing = false;
+    // drawItem value to none
+    drawItem.value = "none";
     rerender();
+  }
+  // stop drawing polygon on enter
+  if (e.key == "Enter") {
+    if (drawItem.value == "polygon" && verticesDrawn != 0) {
+      if (verticesDrawn > 2) {
+        finishDrawing();
+      } else {
+        cancelDrawing();
+      }
+
+      // drawItem value to none
+      drawItem.value = "none";
+      verticesDrawn = 0;
+
+      rerender();
+      updateObjectList();
+    }
   }
 });
 
@@ -346,11 +394,27 @@ setBackground("#000000", 0);
 // createPoint(0.8, 0.0, "#FFFF00");
 // createLine(0.4, 0.0, 0.8, 0.0);
 
-createPolygon([
-  [-0.5, -0.5],
-  [0.5, -0.5],
-  [-0.5, 0.5],
-  [0.5, 0.5],
-]);
+// createPolygon([
+//   [-0.5, -0.5],
+//   [0.5, -0.5],
+//   [-0.5, 0.5],
+//   [0.5, 0.5],
+// ]);
+
+let tempPoints = [
+  [0.314921875, 0.1],
+  [0.444921875, -0.032],
+  [0.3732552083333333, -0.19],
+  [0.214921875, -0.208],
+  [0.06658854166666667, -0.124],
+];
+// for (let i = 0; i < tempPoints.length; i++) {
+//   createPoint(tempPoints[i][0], tempPoints[i][1]);
+// }
+createPolygon(tempPoints);
+
+// update canvas
 rerender();
+
+// update object list
 updateObjectList();

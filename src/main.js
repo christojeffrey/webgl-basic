@@ -235,7 +235,14 @@ function handleMouseDown(e) {
   rerender();
   updateObjectList();
 }
-
+function deleteObject(e) {
+  // prevent event propagation
+  e.stopPropagation();
+  let index = e.target.getAttribute("data-index");
+  objectToBeDrawn.splice(index, 1);
+  updateObjectList();
+  rerender();
+}
 // update UI
 // update objectList on left nav
 function updateObjectList() {
@@ -243,8 +250,16 @@ function updateObjectList() {
   objectList.innerHTML = "";
   for (let i = 0; i < objectToBeDrawn.length; i++) {
     let li = document.createElement("li");
-    li.innerHTML = objectToBeDrawn[i].type;
+    // give the type, and a delete button
+    li.innerHTML = `
+    <div class="object-list-item" data-index=${i}>
+      <div class="object-list-item-type" data-index=${i}>${objectToBeDrawn[i].type}</div>
+      <div class="object-list-item-delete" data-index="${i}">X</div>
+    </div>
+    `;
+    li.querySelector(".object-list-item-delete").addEventListener("click", deleteObject);
     li.setAttribute("data-index", i);
+
     li.addEventListener("click", function (e) {
       clickedIndex = e.target.getAttribute("data-index");
       console.log("Click ", clickedIndex);

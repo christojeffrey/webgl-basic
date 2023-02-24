@@ -57,3 +57,19 @@ body {
   background-color: #f1f1f1;
   padding: 20px;
 }
+
+.object-list-item {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px;
+  border: 1px solid #333;
+  border-radius: 5px;
+  margin: 5px;
+  background-color: #fff;
+}
+.object-list-item-delete {
+  color: #f00;
+  cursor: pointer;
+}

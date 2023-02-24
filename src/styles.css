@@ -73,3 +73,7 @@ body {
   color: #f00;
   cursor: pointer;
 }
+
+#file-input {
+  /* TODO: make it basic button with text bellow */
+}

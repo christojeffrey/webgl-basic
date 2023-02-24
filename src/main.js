@@ -12,6 +12,38 @@ let verticesDrawn = 0;
 /*============== Creating a canvas ====================*/
 let canvas = createCanvas(1000, 1200);
 
+// bind import-button and export-button
+let importButton = document.getElementById("import-button");
+let exportButton = document.getElementById("export-button");
+importButton.addEventListener("click", function () {
+  // take a file from input id file-input, read and parse it as json and save it to objectToBeDrawn
+  let file = document.getElementById("file-input").files[0];
+  let reader = new FileReader();
+  reader.readAsText(file);
+  reader.onload = function () {
+    let temp = JSON.parse(reader.result);
+    // pop all
+    for (let i = 0; i < objectToBeDrawn.length; i++) {
+      objectToBeDrawn.pop();
+    }
+    for (let i = 0; i < temp.length; i++) {
+      objectToBeDrawn.push(temp[i]);
+    }
+    rerender();
+    updateObjectList();
+  };
+});
+exportButton.addEventListener("click", function () {
+  // take objectToBeDrawn and save it as json file
+  let data = JSON.stringify(objectToBeDrawn);
+  let blob = new Blob([data], { type: "text/plain" });
+  let url = URL.createObjectURL(blob);
+  let a = document.createElement("a");
+  a.href = url;
+  a.download = "drawing.json";
+  a.click();
+});
+
 // listen for drawItem id dropdown value
 let drawItem = document.getElementById("drawItem");
 let objectList = document.getElementById("objectList");

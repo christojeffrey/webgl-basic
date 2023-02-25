@@ -252,16 +252,34 @@ function handleMouseDown(e) {
         objectBeingDrawn.y1 = y;
         verticesDrawn++;
       } else if (verticesDrawn == 1) {
-        objectBeingDrawn.x2 = x;
-        objectBeingDrawn.y2 = y;
+        if (Math.abs(objectBeingDrawn.x1 - x) > Math.abs(objectBeingDrawn.y1 - y)) {
+          objectBeingDrawn.x2 = x;
+          objectBeingDrawn.y2 = objectBeingDrawn.y1;
+          objectBeingDrawn.sidex = true
+        } else {
+          objectBeingDrawn.x2 = objectBeingDrawn.x1;
+          objectBeingDrawn.y2 = y;
+          objectBeingDrawn.sidex = false
+        }
         verticesDrawn++;
       } else if (verticesDrawn == 2) {
-        objectBeingDrawn.x3 = x;
-        objectBeingDrawn.y3 = y;
+        if (!objectBeingDrawn.sidex) {
+          objectBeingDrawn.x3 = x;
+          objectBeingDrawn.y3 = objectBeingDrawn.y2;
+        } else {
+          objectBeingDrawn.x3 = objectBeingDrawn.x2;
+          objectBeingDrawn.y3 = y;
+        }
+        objectBeingDrawn.sidex = !objectBeingDrawn.sidex
         verticesDrawn++;
       } else if (verticesDrawn == 3) {
-        objectBeingDrawn.x4 = x;
-        objectBeingDrawn.y4 = y;
+        if (!objectBeingDrawn.sidex) {
+          objectBeingDrawn.x4 = objectBeingDrawn.x1;
+          objectBeingDrawn.y4 = objectBeingDrawn.y3;
+        } else {
+          objectBeingDrawn.x4 = objectBeingDrawn.x3;
+          objectBeingDrawn.y4 = objectBeingDrawn.y1;
+        }
         finishDrawing();
         verticesDrawn = 0;
       }

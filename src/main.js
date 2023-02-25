@@ -1,6 +1,7 @@
 import { createCanvas, rerender, cancelDrawing, createPoint, setBackground, finishDrawing, createPolygon, createLine, objectToBeDrawn, objectBeingDrawn } from "./mainInterface.js";
 import { getXY } from "./utils.js";
 import { convexHull, removeUnusedPoints, triangulate } from "./polygonHelper.js";
+import { rectangle, triangle } from "./helper.js"
 
 const TOLERANCE = 0.01;
 
@@ -15,6 +16,7 @@ let canvas = createCanvas(1000, 1200);
 // bind import-button and export-button
 let importButton = document.getElementById("import-button");
 let exportButton = document.getElementById("export-button");
+
 importButton.addEventListener("click", function () {
   // take a file from input id file-input, read and parse it as json and save it to objectToBeDrawn
   let file = document.getElementById("file-input").files[0];
@@ -33,6 +35,7 @@ importButton.addEventListener("click", function () {
     updateObjectList();
   };
 });
+
 exportButton.addEventListener("click", function () {
   // take objectToBeDrawn and save it as json file
   let data = JSON.stringify(objectToBeDrawn);
@@ -53,32 +56,31 @@ drawItem.addEventListener("change", function () {
   console.log(drawItemValue);
 });
 
-// handle mouse events
 canvas.onmousedown = handleMouseDown;
 canvas.onmouseenter = handleMouseHover;
-
-// click and drag
 canvas.onmousemove = handleMouseMove;
 canvas.onmouseup = handleMouseUp;
 
+// Handle unclicked mouse
 function handleMouseUp(e) {
   isDragging = false;
   objectToBeMoved = null;
 }
-// used to change cursor
+
+// Handle mouse on canvas, change to crosshair
 function handleMouseHover(_) {
-  // change cursor to crosshair
   canvas.style.cursor = "crosshair";
 }
 
-// used to handle dragging, and drawing animation
+// Handle mouse on move, used to handle dragging, and drawing animation
 function handleMouseMove(e) {
+
+  // Handle mouse in drag
   if (isDragging) {
-    // handle drag and drop
     const { x, y } = getXY(e, canvas);
 
+    // HANDLE MOVING OBJECT BY DRAGGING
     if (drawItemValue == "none") {
-      // HANDLE MOVING OBJECT BY DRAGGING
 
       // get the object that is being dragged
       if (objectToBeMoved == null) {
@@ -86,6 +88,7 @@ function handleMouseMove(e) {
           let item = objectToBeDrawn[i];
 
           // define where the object is
+          // Find the point with distance lower than tolerance
           if (item.type == "point") {
             if (Math.abs(item.x - x) < TOLERANCE && Math.abs(item.y - y) < TOLERANCE) {
               objectToBeMoved = item;
@@ -95,7 +98,6 @@ function handleMouseMove(e) {
           }
 
           if (item.type == "line") {
-            // point 1
             if (Math.abs(item.x1 - x) < TOLERANCE && Math.abs(item.y1 - y) < TOLERANCE) {
               objectToBeMoved = item;
               clickedIndex = i;
@@ -129,6 +131,7 @@ function handleMouseMove(e) {
           }
         }
       }
+
       // now we have the object that is being dragged. We need to move it
       if (objectToBeMoved != null) {
         if (objectToBeMoved.type == "point") {
@@ -137,6 +140,7 @@ function handleMouseMove(e) {
 
           setProperties();
           rerender();
+
         } else if (objectToBeMoved.type == "line") {
           if (clickedPoint == 1) {
             objectToBeMoved.x1 = x;
@@ -145,8 +149,10 @@ function handleMouseMove(e) {
             objectToBeMoved.x2 = x;
             objectToBeMoved.y2 = y;
           }
+
           setProperties();
           rerender();
+
         } else if (objectToBeMoved.type == "triangle") {
           if (clickedPoint == 1) {
             objectToBeMoved.x1 = x;
@@ -158,12 +164,14 @@ function handleMouseMove(e) {
             objectToBeMoved.x3 = x;
             objectToBeMoved.y3 = y;
           }
+
           setProperties();
           rerender();
         }
       }
     }
   }
+
   // HANDLE ANIMATION WHEN DRAWING
   if (verticesDrawn != 0) {
     const { x, y } = getXY(e, canvas);
@@ -186,19 +194,22 @@ function handleMouseMove(e) {
   }
 }
 
-// used to handle drawing object
+// Handle mouse when clicked, used to handle drawing object
 function handleMouseDown(e) {
   isDragging = true;
   const { x, y } = getXY(e, canvas);
+  console.log({x, y})
 
   // draw based on dropdown value
   switch (drawItemValue) {
     case "none":
       break;
+
     case "point":
       // add to list of objects
       createPoint(x, y);
       break;
+
     case "line":
       // initiate drawing line
       if (verticesDrawn == 0) {
@@ -213,6 +224,7 @@ function handleMouseDown(e) {
         verticesDrawn = 0;
       }
       break;
+      
     case "triangle":
       // initiate drawing triangle
       if (verticesDrawn == 0) {
@@ -231,6 +243,30 @@ function handleMouseDown(e) {
         verticesDrawn = 0;
       }
       break;
+
+    case "rectangle":
+      // initiate drawing rectangle
+      if (verticesDrawn == 0) {
+        objectBeingDrawn.type = "rectangle";
+        objectBeingDrawn.x1 = x;
+        objectBeingDrawn.y1 = y;
+        verticesDrawn++;
+      } else if (verticesDrawn == 1) {
+        objectBeingDrawn.x2 = x;
+        objectBeingDrawn.y2 = y;
+        verticesDrawn++;
+      } else if (verticesDrawn == 2) {
+        objectBeingDrawn.x3 = x;
+        objectBeingDrawn.y3 = y;
+        verticesDrawn++;
+      } else if (verticesDrawn == 3) {
+        objectBeingDrawn.x4 = x;
+        objectBeingDrawn.y4 = y;
+        finishDrawing();
+        verticesDrawn = 0;
+      }
+      break;
+
     case "polygon":
       // initiate drawing polygon
       objectBeingDrawn.type = "polygon";
@@ -260,13 +296,14 @@ function handleMouseDown(e) {
       console.log("objectBeingDrawn");
       console.log(objectBeingDrawn);
       verticesDrawn++;
+      break;
 
     // stop on key press enter
   }
-
   rerender();
   updateObjectList();
 }
+
 function deleteObject(e) {
   // prevent event propagation
   e.stopPropagation();
@@ -275,6 +312,7 @@ function deleteObject(e) {
   updateObjectList();
   rerender();
 }
+
 // update UI
 // update objectList on left nav
 function updateObjectList() {
@@ -459,6 +497,13 @@ let tempPoints = [
 //   createPoint(tempPoints[i][0], tempPoints[i][1]);
 // }
 createPolygon(tempPoints);
+
+
+// rectangle
+let points = [ 0.2, 0.2, 0.2, -0.2, -0.2, -0.2];
+// rectangle(points, "#FFFF00");
+
+triangle(points, "#FFFF00")
 
 // update canvas
 rerender();

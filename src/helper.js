@@ -64,6 +64,36 @@ function setOffset() {
       }
       offset += count;
     }
+    if (drawnItems[i].type == "rectangle") {
+      let count = 0;
+      if (drawnItems[i].x1 != null) {
+        count++;
+      }
+      if (drawnItems[i].x2 != null) {
+        count++;
+      }
+      if (drawnItems[i].x3 != null) {
+        count++;
+      }
+      if (drawnItems[i].x4 != null) {
+        count++;
+      }
+
+      if (drawnItems[i].y1 != null) {
+        count++;
+      }
+      if (drawnItems[i].y2 != null) {
+        count++;
+      }
+      if (drawnItems[i].y3 != null) {
+        count++;
+      }
+      if (drawnItems[i].y4 != null) {
+        count++;
+      }
+
+      offset += count;
+    }
 
     if (drawnItems[i].type == "polygon") {
       // an array of triangles
@@ -233,6 +263,76 @@ function drawTriangle() {
   gl.drawElements(gl.POINTS, 1, gl.UNSIGNED_SHORT, offset + 4);
 }
 
+function rectangle([x1, y1, x2, y2, x3, y3, x4, y4], colorHex) {
+  console.log("Rectangle is creating")
+  console.log({
+    "x1": x1,
+    "y1": y1,
+    "x2": x2,
+    "y2": y2,
+    "x3": x3,
+    "y3": y3,
+    "x4": x4,
+    "y4": y4,
+  })
+
+  if (!vertex_buffer) {
+    vertex_buffer = gl.createBuffer();
+  }
+  if (!Index_Buffer) {
+    Index_Buffer = gl.createBuffer();
+  }
+
+  // First Triangle
+  points = [...points, x1, y1, 0.0, x2, y2, 0.0, x3, y3, 0.0, x4, y4, 0.0];
+  indexes = [...indexes, points.length / 3 - 4, points.length / 3 -3, points.length / 3 - 2, points.length / 3 - 1];
+
+  gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(points), gl.STATIC_DRAW);
+  gl.bindBuffer(gl.ARRAY_BUFFER, null)
+
+  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, Index_Buffer);
+  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indexes), gl.STATIC_DRAW);
+  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
+
+  objectToPixel(vertex_buffer, Index_Buffer, colorHex);
+
+  drawRectangle();
+  
+  // if (!vertex_buffer) {
+  //   vertex_buffer = gl.createBuffer();
+  // }
+  // if (!Index_Buffer) {
+  //   Index_Buffer = gl.createBuffer();
+  // }
+
+  // points = [...points, x1, y1, 0.0, x3, y3, 0.0, x4, y4, 0.0];
+  // indexes = [...indexes, points.length / 3 -3, points.length / 3 - 2, points.length / 3 - 1];
+
+  // gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
+  // gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(points), gl.STATIC_DRAW);
+  // gl.bindBuffer(gl.ARRAY_BUFFER, null)
+
+  // gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, Index_Buffer);
+  // gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indexes), gl.STATIC_DRAW);
+  // gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
+
+  // objectToPixel(vertex_buffer, Index_Buffer, colorHex);
+}
+
+function drawRectangle() {
+  // Draw rectangle
+  let offset = setOffset();
+  console.log("drawing rectangle with offset", offset, "and length", 4, "and type");
+  gl.drawElements(gl.TRIANGLE_FAN, 4, gl.UNSIGNED_SHORT, offset);
+
+  // draw point at the rectangles' vertices
+  gl.drawElements(gl.POINTS, 1, gl.UNSIGNED_SHORT, offset);
+  gl.drawElements(gl.POINTS, 1, gl.UNSIGNED_SHORT, offset + 2);
+  gl.drawElements(gl.POINTS, 1, gl.UNSIGNED_SHORT, offset + 4);
+  gl.drawElements(gl.POINTS, 1, gl.UNSIGNED_SHORT, offset + 6);
+}
+
 // polygon
 function polygon(triangles, colorHex) {
   // setup temporary drawnItems.
@@ -329,6 +429,7 @@ function drawLine() {
 // drawing helper
 function finishDrawing() {
   // update objectToBeDrawn, objectBeingDrawn
+  console.log("Draw Finished")
   if (objectBeingDrawn) {
     objectToBeDrawn.push(objectBeingDrawn);
     objectBeingDrawn = {};
@@ -346,6 +447,14 @@ function drawObject(object) {
       line(object.x1, object.y1, object.x2, object.y2);
     } else {
       triangle([object.x1, object.y1, object.x2, object.y2, object.x3, object.y3], object.colorHex);
+    }
+  } else if (object.type == "rectangle") {
+    if (object.x3 == undefined || object.y3 == undefined) {
+      line(object.x1, object.y1, object.x2, object.y2);
+    } else if (object.x4 == undefined || object.y3 == undefined) {
+      triangle([object.x1, object.y1, object.x2, object.y2, object.x3, object.y3], object.colorHex);
+    } else {
+      rectangle([object.x1, object.y1, object.x2, object.y2, object.x3, object.y3, object.x4, object.y4], object.colorHex)
     }
   } else if (object.type == "polygon") {
     polygon(object.triangles, object.colorHex);
@@ -376,4 +485,4 @@ function rerender() {
     drawObject(objectBeingDrawn);
   }
 }
-export { rerender, createCanvas, finishDrawing, cancelDrawing, objectToBeDrawn, background, objectBeingDrawn };
+export { rerender, createCanvas, finishDrawing, cancelDrawing, objectToBeDrawn, background, objectBeingDrawn, rectangle, triangle };

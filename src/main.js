@@ -1,7 +1,7 @@
 import { createCanvas, rerender, cancelDrawing, createPoint, setBackground, finishDrawing, createPolygon, createLine, objectToBeDrawn, objectBeingDrawn } from "./mainInterface.js";
 import { getXY } from "./utils.js";
 import { convexHull, removeUnusedPoints, triangulate } from "./polygonHelper.js";
-import { rectangle, triangle } from "./helper.js"
+import { rectangle, triangle, square } from "./helper.js"
 
 const TOLERANCE = 0.01;
 
@@ -358,6 +358,60 @@ function handleMouseDown(e) {
         verticesDrawn = 0;
       }
       break;
+
+      case "square":
+        let squareLength;
+        // initiate drawing square
+        if (verticesDrawn == 0) {
+          objectBeingDrawn.type = "square";
+          objectBeingDrawn.x1 = x;
+          objectBeingDrawn.y1 = y;
+          verticesDrawn++;
+        } else if (verticesDrawn == 1) {
+          if (Math.abs(objectBeingDrawn.x1 - x) > Math.abs(objectBeingDrawn.y1 - y)) {
+            objectBeingDrawn.x2 = x;
+            objectBeingDrawn.y2 = objectBeingDrawn.y1;
+            objectBeingDrawn.sidex = true;
+          } else {
+            objectBeingDrawn.x2 = objectBeingDrawn.x1;
+            objectBeingDrawn.y2 = y;
+            objectBeingDrawn.sidex = false;
+          }
+          verticesDrawn++;
+        } else if (verticesDrawn == 2) {
+          if (!objectBeingDrawn.sidex) {
+            squareLength = Math.abs(objectBeingDrawn.y2 - objectBeingDrawn.y1);
+            if (x >= objectBeingDrawn.x2) {
+              objectBeingDrawn.x3 = objectBeingDrawn.x2 + squareLength;
+            } else {
+              objectBeingDrawn.x3 = objectBeingDrawn.x2 - squareLength;
+            }
+            objectBeingDrawn.y3 = objectBeingDrawn.y2;
+          } else {
+            squareLength = Math.abs(objectBeingDrawn.x2 - objectBeingDrawn.x1);
+            if (y >= objectBeingDrawn.y2) {
+              objectBeingDrawn.y3 = objectBeingDrawn.y2 + squareLength;
+            } else {
+              objectBeingDrawn.y3 = objectBeingDrawn.y2 - squareLength;
+            }
+            objectBeingDrawn.x3 = objectBeingDrawn.x2;
+          }
+          objectBeingDrawn.sidex = !objectBeingDrawn.sidex
+          verticesDrawn++;
+        } else if (verticesDrawn == 3) {
+          if (!objectBeingDrawn.sidex) {
+            squareLength = Math.abs(objectBeingDrawn.y2 - objectBeingDrawn.y1);
+            objectBeingDrawn.x4 = objectBeingDrawn.x1;
+            objectBeingDrawn.y4 = objectBeingDrawn.y3;
+          } else {
+            squareLength = Math.abs(objectBeingDrawn.x2 - objectBeingDrawn.x1);
+            objectBeingDrawn.x4 = objectBeingDrawn.x3;
+            objectBeingDrawn.y4 = objectBeingDrawn.y1;
+          }
+          finishDrawing();
+          verticesDrawn = 0;
+        }
+        break;
 
     case "polygon":
       // initiate drawing polygon

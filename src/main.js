@@ -588,6 +588,76 @@ function setProperties() {
       objectToBeDrawn[clickedIndex].colorHex = colorHex;
       rerender();
     });
+  } else if (objectToBeDrawn[clickedIndex].type == "triangle") {
+    let x1 = objectToBeDrawn[clickedIndex].x1;
+    let y1 = objectToBeDrawn[clickedIndex].y1;
+    let x2 = objectToBeDrawn[clickedIndex].x2;
+    let y2 = objectToBeDrawn[clickedIndex].y2;
+    let x3 = objectToBeDrawn[clickedIndex].x3;
+    let y3 = objectToBeDrawn[clickedIndex].y3;
+    let colorHex = objectToBeDrawn[clickedIndex].colorHex;
+    html = `
+    <form id="triangleProperties">
+      <div id="properties-title">
+        <h3>Triangle Properties</h3>
+      </div>
+      <div>
+        <label for="x1">x1</label>
+        <input id="x1" value=${x1} />
+      </div>
+      <div>
+        <label for="y1">y1</label>
+        <input id="y1" value=${y1} />
+      </div>
+      <div>
+        <label for="x2">x2</label>
+        <input id="x2" value=${x2} />
+      </div>
+      <div>
+        <label for="y2">y2</label>
+        <input id="y2" value=${y2} />
+      </div>
+      <div>
+        <label for="x3">x3</label>
+        <input id="x3" value=${x3} />
+      </div>
+      <div>
+        <label for="y3">y3</label>
+        <input id="y3" value=${y3} />
+      </div>
+      <div class="rotate">
+        <h4>Rotate</h4>
+        <input type="text" id="rotate" name="rotate">
+      </div>
+      <div>
+      <input type="color" id="colorHex" name="favcolor" value=${colorHex}>
+      </div>
+      <input type="submit">
+      </form>
+    `;
+    let properties = document.getElementById("properties");
+    properties.innerHTML = html;
+
+    // add event listener to form
+    let form = document.getElementById("triangleProperties");
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      let x1 = document.getElementById("x1").value;
+      let y1 = document.getElementById("y1").value;
+      let x2 = document.getElementById("x2").value;
+      let y2 = document.getElementById("y2").value;
+      let x3 = document.getElementById("x3").value;
+      let y3 = document.getElementById("y3").value;
+      let colorHex = document.getElementById("colorHex").value;
+      objectToBeDrawn[clickedIndex].x1 = x1;
+      objectToBeDrawn[clickedIndex].y1 = y1;
+      objectToBeDrawn[clickedIndex].x2 = x2;
+      objectToBeDrawn[clickedIndex].y2 = y2;
+      objectToBeDrawn[clickedIndex].x3 = x3;
+      objectToBeDrawn[clickedIndex].y3 = y3;
+      objectToBeDrawn[clickedIndex].colorHex = colorHex;
+      rerender();
+    });
   } else if (objectToBeDrawn[clickedIndex].type == "rectangle") {
     let x1 = objectToBeDrawn[clickedIndex].x1;
     let y1 = objectToBeDrawn[clickedIndex].y1;
@@ -672,90 +742,6 @@ function setProperties() {
       objectToBeDrawn[clickedIndex].colorHex = colorHex;
       rerender();
     });
-  // } else if (objectToBeMoved.type == "rectangle") {
-  //   let x1 = objectToBeMoved.x1;
-  //   let y1 = objectToBeMoved.y1;
-  //   let x2 = objectToBeMoved.x2;
-  //   let y2 = objectToBeMoved.y2;
-  //   let x3 = objectToBeMoved.x3;
-  //   let y3 = objectToBeMoved.y3;
-  //   let x4 = objectToBeMoved.x4;
-  //   let y4 = objectToBeMoved.y4;
-  //   let colorHex = objectToBeMoved.colorHex;
-  //   html = `
-  //   <form id="rectangleProperties">
-  //     <div id="properties-title">
-  //       <h3>Rectangle Properties</h3>
-  //     </div>
-  //     <div>
-  //       <label for="x1">x1</label>
-  //       <input id="x1" value=${x1} />
-  //     </div>
-  //     <div>
-  //       <label for="y1">y1</label>
-  //       <input id="y1" value=${y1} />
-  //     </div>
-  //     <div>
-  //       <label for="x2">x2</label>
-  //       <input id="x2" value=${x2} />
-  //     </div>
-  //     <div>
-  //       <label for="y2">y2</label>
-  //       <input id="y2" value=${y2} />
-  //     </div>
-  //     <div>
-  //       <label for="x3">x3</label>
-  //       <input id="x3" value=${x3} />
-  //     </div>
-  //     <div>
-  //       <label for="y3">y3</label>
-  //       <input id="y3" value=${y3} />
-  //     </div>
-  //     <div>
-  //       <label for="x4">x4</label>
-  //       <input id="x4" value=${x4} />
-  //     </div>
-  //     <div>
-  //       <label for="y4">y4</label>
-  //       <input id="y4" value=${y4} />
-  //     </div>
-  //     <div class="rotate">
-  //       <h4>Rotate</h4>
-  //       <input type="text" id="rotate" name="rotate">
-  //     </div>
-  //     <div>
-  //     <input type="color" id="colorHex" name="favcolor" value=${colorHex}>
-  //     </div>
-  //     <input type="submit">
-  //     </form>
-  //   `;
-  //   let properties = document.getElementById("properties");
-  //   properties.innerHTML = html;
-
-  //   // add event listener to form
-  //   let form = document.getElementById("lineProperties");
-  //   form.addEventListener("submit", function (e) {
-  //     e.preventDefault();
-  //     let x1 = document.getElementById("x1").value;
-  //     let y1 = document.getElementById("y1").value;
-  //     let x2 = document.getElementById("x2").value;
-  //     let y2 = document.getElementById("y2").value;
-  //     let x3 = document.getElementById("x3").value;
-  //     let y3 = document.getElementById("y3").value;
-  //     let x4 = document.getElementById("x4").value;
-  //     let y4 = document.getElementById("y4").value;
-  //     let colorHex = document.getElementById("colorHex").value;
-  //     objectToBeDrawn.x1 = x1;
-  //     objectToBeDrawn.y1 = y1;
-  //     objectToBeDrawn.x2 = x2;
-  //     objectToBeDrawn.y2 = y2;
-  //     objectToBeDrawn.x3 = x3;
-  //     objectToBeDrawn.y3 = y3;
-  //     objectToBeDrawn.x4 = x4;
-  //     objectToBeDrawn.y4 = y4;
-  //     objectToBeDrawn.colorHex = colorHex;
-  //     rerender();
-  //   });
   }
 }
 

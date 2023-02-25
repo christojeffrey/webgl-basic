@@ -142,7 +142,7 @@ function handleMouseMove(e) {
               clickedIndex = i;
               clickedPoint = 2;
               break;
-            }  else if (Math.abs(item.x3 - x) < TOLERANCE && Math.abs(item.y3 - y) < TOLERANCE) {
+            } else if (Math.abs(item.x3 - x) < TOLERANCE && Math.abs(item.y3 - y) < TOLERANCE) {
               objectToBeMoved = item;
               clickedIndex = i;
               clickedPoint = 3;
@@ -192,73 +192,55 @@ function handleMouseMove(e) {
 
           setProperties();
           rerender();
-
         } else if (objectToBeMoved.type == "rectangle") {
-          if (clickedPoint == 1) {
-            objectToBeMoved.x1 = x;
-            objectToBeMoved.y1 = y;
-          } else if (clickedPoint == 2) {
-            objectToBeMoved.x2 = x;
-            objectToBeMoved.y2 = y;
-          } else if (clickedPoint == 3) {
-            objectToBeMoved.x3 = x;
-            objectToBeMoved.y3 = y;
-          } else if (clickedPoint == 4) {
-            objectToBeMoved.x4 = x;
-            objectToBeMoved.y4 = y;
-          } 
-
+            if (clickedPoint == 1) {
+              console.log("Click: 1")
+              objectToBeMoved.x1 = x;
+              objectToBeMoved.y1 = y;
+              if (objectToBeMoved.rect == "y") {
+                objectToBeMoved.x2 = x;
+                objectToBeMoved.y4 = y;
+              } else {
+                objectToBeMoved.x4 = x;
+                objectToBeMoved.y2 = y;
+              } 
+            } else if (clickedPoint == 2) {
+              console.log("Click: 2")
+              objectToBeMoved.x2 = x;
+              objectToBeMoved.y2 = y;
+              if (objectToBeMoved.rect == "y") {
+                objectToBeMoved.x1 = x;
+                objectToBeMoved.y3 = y;
+              } else {
+                objectToBeMoved.x3 = x;
+                objectToBeMoved.y1 = y;
+              } 
+            } else if (clickedPoint == 3) {
+              console.log("Click: 3")
+              objectToBeMoved.x3 = x;
+              objectToBeMoved.y3 = y;
+              if (objectToBeMoved.rect == "y") {
+                objectToBeMoved.x4 = x;
+                objectToBeMoved.y2 = y;
+              } else {
+                objectToBeMoved.x2 = x;
+                objectToBeMoved.y4 = y;
+              } 
+            } else if (clickedPoint == 4) {
+              console.log("Click: 4")
+              objectToBeMoved.x4 = x;
+              objectToBeMoved.y4 = y;
+              if (objectToBeMoved.rect == "y") {
+                objectToBeMoved.x3 = x;
+                objectToBeMoved.y1 = y;
+              } else {
+                objectToBeMoved.x1 = x;
+                objectToBeMoved.y3 = y;
+              } 
+            }
+          
           setProperties();
           rerender();
-
-        } else if (objectToBeMoved.type == "square") {
-          let x1 = objectToBeMoved.x1;
-          let y1 = objectToBeMoved.y1;
-          let x2 = objectToBeMoved.x2;
-          let y2 = objectToBeMoved.y2;
-          let x3 = objectToBeMoved.x3;
-          let y3 = objectToBeMoved.y3;
-          let x4 = objectToBeMoved.x4;
-          let y4 = objectToBeMoved.y4;
-
-          if (clickedPoint == 1) {
-            let result = resizeSquare(x, y, x1, y1, x2, y2, x4, y4);
-            objectToBeMoved.x1 = result[0];
-            objectToBeMoved.y1 = result[1];
-            objectToBeMoved.x2 = result[2];
-            objectToBeMoved.y2 = result[3];
-            objectToBeMoved.x4 = result[4];
-            objectToBeMoved.y4 = result[5];
-          } else if (clickedPoint == 2) {
-            let result = resizeSquare(x, y, x2, y2, x3, y3, x1, y1);
-            objectToBeMoved.x2 = result[0];
-            objectToBeMoved.y2 = result[1];
-            objectToBeMoved.x3 = result[2];
-            objectToBeMoved.y3 = result[3];
-            objectToBeMoved.x1 = result[4];
-            objectToBeMoved.y1 = result[5];
-          } else if (clickedPoint == 3) {
-            let result = resizeSquare(x, y, x3, y3, x4, y4, x2, y2);
-            objectToBeMoved.x3 = result[0];
-            objectToBeMoved.y3 = result[1];
-            objectToBeMoved.x4 = result[2];
-            objectToBeMoved.y4 = result[3];
-            objectToBeMoved.x2 = result[4];
-            objectToBeMoved.y2 = result[5];
-            console.log("akwoakwo");
-          } else if (clickedPoint == 4) {
-            let result = resizeSquare(x, y, x4, y4, x1, y1, x3, y3);
-            objectToBeMoved.x4 = result[0];
-            objectToBeMoved.y4 = result[1];
-            objectToBeMoved.x1 = result[2];
-            objectToBeMoved.y1 = result[3];
-            objectToBeMoved.x3 = result[4];
-            objectToBeMoved.y3 = result[5];
-          } 
-
-          setProperties();
-          rerender();
-
         }
       }
     }
@@ -337,6 +319,7 @@ function handleMouseDown(e) {
       break;
 
     case "rectangle":
+      console.log("Mouse Down")
       // initiate drawing rectangle
       if (verticesDrawn == 0) {
         objectBeingDrawn.type = "rectangle";
@@ -347,15 +330,15 @@ function handleMouseDown(e) {
         if (Math.abs(objectBeingDrawn.x1 - x) > Math.abs(objectBeingDrawn.y1 - y)) {
           objectBeingDrawn.x2 = x;
           objectBeingDrawn.y2 = objectBeingDrawn.y1;
-          objectBeingDrawn.sidex = true
+          objectBeingDrawn.rect = "x";
         } else {
           objectBeingDrawn.x2 = objectBeingDrawn.x1;
           objectBeingDrawn.y2 = y;
-          objectBeingDrawn.sidex = false
+          objectBeingDrawn.rect = "y";
         }
         verticesDrawn++;
       } else if (verticesDrawn == 2) {
-        if (!objectBeingDrawn.sidex) {
+        if (objectBeingDrawn.rect == "y") {
           objectBeingDrawn.x3 = x;
           objectBeingDrawn.y3 = objectBeingDrawn.y2;
         } else {
@@ -365,7 +348,7 @@ function handleMouseDown(e) {
         objectBeingDrawn.sidex = !objectBeingDrawn.sidex
         verticesDrawn++;
       } else if (verticesDrawn == 3) {
-        if (!objectBeingDrawn.sidex) {
+        if (objectBeingDrawn.rect == "x") {
           objectBeingDrawn.x4 = objectBeingDrawn.x1;
           objectBeingDrawn.y4 = objectBeingDrawn.y3;
         } else {
@@ -603,6 +586,160 @@ function setProperties() {
       objectToBeDrawn[clickedIndex].y1 = y1;
       objectToBeDrawn[clickedIndex].x2 = x2;
       objectToBeDrawn[clickedIndex].y2 = y2;
+      objectToBeDrawn[clickedIndex].colorHex = colorHex;
+      rerender();
+    });
+  } else if (objectToBeDrawn[clickedIndex].type == "triangle") {
+    let x1 = objectToBeDrawn[clickedIndex].x1;
+    let y1 = objectToBeDrawn[clickedIndex].y1;
+    let x2 = objectToBeDrawn[clickedIndex].x2;
+    let y2 = objectToBeDrawn[clickedIndex].y2;
+    let x3 = objectToBeDrawn[clickedIndex].x3;
+    let y3 = objectToBeDrawn[clickedIndex].y3;
+    let colorHex = objectToBeDrawn[clickedIndex].colorHex;
+    html = `
+    <form id="triangleProperties">
+      <div id="properties-title">
+        <h3>Triangle Properties</h3>
+      </div>
+      <div>
+        <label for="x1">x1</label>
+        <input id="x1" value=${x1} />
+      </div>
+      <div>
+        <label for="y1">y1</label>
+        <input id="y1" value=${y1} />
+      </div>
+      <div>
+        <label for="x2">x2</label>
+        <input id="x2" value=${x2} />
+      </div>
+      <div>
+        <label for="y2">y2</label>
+        <input id="y2" value=${y2} />
+      </div>
+      <div>
+        <label for="x3">x3</label>
+        <input id="x3" value=${x3} />
+      </div>
+      <div>
+        <label for="y3">y3</label>
+        <input id="y3" value=${y3} />
+      </div>
+      <div class="rotate">
+        <h4>Rotate</h4>
+        <input type="text" id="rotate" name="rotate">
+      </div>
+      <div>
+      <input type="color" id="colorHex" name="favcolor" value=${colorHex}>
+      </div>
+      <input type="submit">
+      </form>
+    `;
+    let properties = document.getElementById("properties");
+    properties.innerHTML = html;
+
+    // add event listener to form
+    let form = document.getElementById("triangleProperties");
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      let x1 = document.getElementById("x1").value;
+      let y1 = document.getElementById("y1").value;
+      let x2 = document.getElementById("x2").value;
+      let y2 = document.getElementById("y2").value;
+      let x3 = document.getElementById("x3").value;
+      let y3 = document.getElementById("y3").value;
+      let colorHex = document.getElementById("colorHex").value;
+      objectToBeDrawn[clickedIndex].x1 = x1;
+      objectToBeDrawn[clickedIndex].y1 = y1;
+      objectToBeDrawn[clickedIndex].x2 = x2;
+      objectToBeDrawn[clickedIndex].y2 = y2;
+      objectToBeDrawn[clickedIndex].x3 = x3;
+      objectToBeDrawn[clickedIndex].y3 = y3;
+      objectToBeDrawn[clickedIndex].colorHex = colorHex;
+      rerender();
+    });
+  } else if (objectToBeDrawn[clickedIndex].type == "rectangle") {
+    let x1 = objectToBeDrawn[clickedIndex].x1;
+    let y1 = objectToBeDrawn[clickedIndex].y1;
+    let x2 = objectToBeDrawn[clickedIndex].x2;
+    let y2 = objectToBeDrawn[clickedIndex].y2;
+    let x3 = objectToBeDrawn[clickedIndex].x3;
+    let y3 = objectToBeDrawn[clickedIndex].y3;
+    let x4 = objectToBeDrawn[clickedIndex].x4;
+    let y4 = objectToBeDrawn[clickedIndex].y4;
+    let colorHex = objectToBeDrawn[clickedIndex].colorHex;
+    html = `
+    <form id="rectangleProperties">
+      <div id="properties-title">
+        <h3>Rectangle Properties</h3>
+      </div>
+      <div>
+        <label for="x1">x1</label>
+        <input id="x1" value=${x1} />
+      </div>
+      <div>
+        <label for="y1">y1</label>
+        <input id="y1" value=${y1} />
+      </div>
+      <div>
+        <label for="x2">x2</label>
+        <input id="x2" value=${x2} />
+      </div>
+      <div>
+        <label for="y2">y2</label>
+        <input id="y2" value=${y2} />
+      </div>
+      <div>
+        <label for="x3">x3</label>
+        <input id="x3" value=${x3} />
+      </div>
+      <div>
+        <label for="y3">y3</label>
+        <input id="y3" value=${y3} />
+      </div>
+      <div>
+        <label for="x4">x4</label>
+        <input id="x4" value=${x4} />
+      </div>
+      <div>
+        <label for="y4">y4</label>
+        <input id="y4" value=${y4} />
+      </div>
+      <div class="rotate">
+        <h4>Rotate</h4>
+        <input type="text" id="rotate" name="rotate">
+      </div>
+      <div>
+      <input type="color" id="colorHex" name="favcolor" value=${colorHex}>
+      </div>
+      <input type="submit">
+      </form>
+    `;
+    let properties = document.getElementById("properties");
+    properties.innerHTML = html;
+
+    // add event listener to form
+    let form = document.getElementById("rectangleProperties");
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      let x1 = document.getElementById("x1").value;
+      let y1 = document.getElementById("y1").value;
+      let x2 = document.getElementById("x2").value;
+      let y2 = document.getElementById("y2").value;
+      let x3 = document.getElementById("x3").value;
+      let y3 = document.getElementById("y3").value;
+      let x4 = document.getElementById("x4").value;
+      let y4 = document.getElementById("y4").value;
+      let colorHex = document.getElementById("colorHex").value;
+      objectToBeDrawn[clickedIndex].x1 = x1;
+      objectToBeDrawn[clickedIndex].y1 = y1;
+      objectToBeDrawn[clickedIndex].x2 = x2;
+      objectToBeDrawn[clickedIndex].y2 = y2;
+      objectToBeDrawn[clickedIndex].x3 = x3;
+      objectToBeDrawn[clickedIndex].y3 = y3;
+      objectToBeDrawn[clickedIndex].x4 = x4;
+      objectToBeDrawn[clickedIndex].y4 = y4;
       objectToBeDrawn[clickedIndex].colorHex = colorHex;
       rerender();
     });

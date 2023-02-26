@@ -25,10 +25,10 @@ function createLine(x1, y1, x2, y2, colorHex) {
   });
 }
 
-function createPolygon(points) {
+function createPolygon(originalPoints) {
   // filter with convex hull
   // console.log("points", points);
-  points = convexHull(points);
+  let points = convexHull(originalPoints);
   // console.log("convex hull", points);
 
   points = removeUnusedPoints(points);
@@ -41,6 +41,7 @@ function createPolygon(points) {
     type: "polygon",
     triangles,
     points,
+    originalPoints,
     colorHex: "#000FF0",
   });
 }

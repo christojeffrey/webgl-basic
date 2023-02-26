@@ -364,12 +364,30 @@ function drawSquare() {
 }
 
 // polygon
-function polygon(triangles, colorHex) {
+function polygon(object, colorHex) {
+  let originalPoints = object.originalPoints;
+  // filter with convex hull
+  // add point to sides array
+  console.log("originalPoints", originalPoints);
+  let filteredPoints = convexHull(originalPoints);
+
+  filteredPoints = removeUnusedPoints(filteredPoints);
+  console.log("filteredPoints");
+  console.log(filteredPoints);
+
+  let triangles = triangulate(filteredPoints);
+
+  object.triangles = triangles;
+  object.points = filteredPoints;
+
+  console.log("!!!!!!!!");
+  console.log("triangles", triangles);
   // setup temporary drawnItems.
   // only need to do this to polygon, since it's created using multiple triangles. which made the offset changes while it is being drawn.
   drawnItems.push({
     type: "polygon",
     triangles: [],
+    points: filteredPoints,
   });
 
   // draw many triangles
@@ -377,6 +395,7 @@ function polygon(triangles, colorHex) {
   for (let i = 0; i < triangles.length; i++) {
     // flatten
     let toBeDrawn = triangles[i].flat();
+    console.log("flatenned", toBeDrawn);
     let x1 = toBeDrawn[0];
     let y1 = toBeDrawn[1];
     let x2 = toBeDrawn[2];
@@ -412,6 +431,7 @@ function polygon(triangles, colorHex) {
     drawnItems.push({
       type: "polygon",
       triangles: drawnTriangles,
+      points: filteredPoints,
     });
   }
   drawnItems.pop();
@@ -487,7 +507,7 @@ function drawObject(object) {
       rectangle([object.x1, object.y1, object.x2, object.y2, object.x3, object.y3, object.x4, object.y4], object.colorHex);
     }
   } else if (object.type == "polygon") {
-    polygon(object.triangles, object.colorHex);
+    polygon(object, object.colorHex);
   } else if (object.type == "square") {
     if (object.x3 == undefined || object.y3 == undefined) {
       line(object.x1, object.y1, object.x2, object.y2);

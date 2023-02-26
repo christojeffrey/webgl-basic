@@ -1,7 +1,7 @@
 import { createCanvas, rerender, cancelDrawing, createPoint, setBackground, finishDrawing, createPolygon, createLine, objectToBeDrawn, objectBeingDrawn } from "./mainInterface.js";
 import { getXY } from "./utils.js";
 import { convexHull, removeUnusedPoints, triangulate } from "./polygonHelper.js";
-import { rectangle, triangle, square } from "./helper.js"
+import { rectangle, triangle, square } from "./helper.js";
 import { resizeSquare } from "./squareHelper.js";
 
 const TOLERANCE = 0.01;
@@ -75,14 +75,12 @@ function handleMouseHover(_) {
 
 // Handle mouse on move, used to handle dragging, and drawing animation
 function handleMouseMove(e) {
-
   // Handle mouse in drag
   if (isDragging) {
     const { x, y } = getXY(e, canvas);
 
     // HANDLE MOVING OBJECT BY DRAGGING
     if (drawItemValue == "none") {
-
       // get the object that is being dragged
       if (objectToBeMoved == null) {
         for (let i = 0; i < objectToBeDrawn.length; i++) {
@@ -165,7 +163,6 @@ function handleMouseMove(e) {
 
           setProperties();
           rerender();
-
         } else if (objectToBeMoved.type == "line") {
           if (clickedPoint == 1) {
             objectToBeMoved.x1 = x;
@@ -177,7 +174,6 @@ function handleMouseMove(e) {
 
           setProperties();
           rerender();
-
         } else if (objectToBeMoved.type == "triangle") {
           if (clickedPoint == 1) {
             objectToBeMoved.x1 = x;
@@ -193,52 +189,52 @@ function handleMouseMove(e) {
           setProperties();
           rerender();
         } else if (objectToBeMoved.type == "rectangle") {
-            if (clickedPoint == 1) {
-              console.log("Click: 1")
-              objectToBeMoved.x1 = x;
-              objectToBeMoved.y1 = y;
-              if (objectToBeMoved.rect == "y") {
-                objectToBeMoved.x2 = x;
-                objectToBeMoved.y4 = y;
-              } else {
-                objectToBeMoved.x4 = x;
-                objectToBeMoved.y2 = y;
-              } 
-            } else if (clickedPoint == 2) {
-              console.log("Click: 2")
+          if (clickedPoint == 1) {
+            console.log("Click: 1");
+            objectToBeMoved.x1 = x;
+            objectToBeMoved.y1 = y;
+            if (objectToBeMoved.rect == "y") {
               objectToBeMoved.x2 = x;
-              objectToBeMoved.y2 = y;
-              if (objectToBeMoved.rect == "y") {
-                objectToBeMoved.x1 = x;
-                objectToBeMoved.y3 = y;
-              } else {
-                objectToBeMoved.x3 = x;
-                objectToBeMoved.y1 = y;
-              } 
-            } else if (clickedPoint == 3) {
-              console.log("Click: 3")
-              objectToBeMoved.x3 = x;
-              objectToBeMoved.y3 = y;
-              if (objectToBeMoved.rect == "y") {
-                objectToBeMoved.x4 = x;
-                objectToBeMoved.y2 = y;
-              } else {
-                objectToBeMoved.x2 = x;
-                objectToBeMoved.y4 = y;
-              } 
-            } else if (clickedPoint == 4) {
-              console.log("Click: 4")
-              objectToBeMoved.x4 = x;
               objectToBeMoved.y4 = y;
-              if (objectToBeMoved.rect == "y") {
-                objectToBeMoved.x3 = x;
-                objectToBeMoved.y1 = y;
-              } else {
-                objectToBeMoved.x1 = x;
-                objectToBeMoved.y3 = y;
-              } 
+            } else {
+              objectToBeMoved.x4 = x;
+              objectToBeMoved.y2 = y;
             }
-          
+          } else if (clickedPoint == 2) {
+            console.log("Click: 2");
+            objectToBeMoved.x2 = x;
+            objectToBeMoved.y2 = y;
+            if (objectToBeMoved.rect == "y") {
+              objectToBeMoved.x1 = x;
+              objectToBeMoved.y3 = y;
+            } else {
+              objectToBeMoved.x3 = x;
+              objectToBeMoved.y1 = y;
+            }
+          } else if (clickedPoint == 3) {
+            console.log("Click: 3");
+            objectToBeMoved.x3 = x;
+            objectToBeMoved.y3 = y;
+            if (objectToBeMoved.rect == "y") {
+              objectToBeMoved.x4 = x;
+              objectToBeMoved.y2 = y;
+            } else {
+              objectToBeMoved.x2 = x;
+              objectToBeMoved.y4 = y;
+            }
+          } else if (clickedPoint == 4) {
+            console.log("Click: 4");
+            objectToBeMoved.x4 = x;
+            objectToBeMoved.y4 = y;
+            if (objectToBeMoved.rect == "y") {
+              objectToBeMoved.x3 = x;
+              objectToBeMoved.y1 = y;
+            } else {
+              objectToBeMoved.x1 = x;
+              objectToBeMoved.y3 = y;
+            }
+          }
+
           setProperties();
           rerender();
         } else if (objectToBeMoved.type == "square") {
@@ -283,7 +279,7 @@ function handleMouseMove(e) {
             objectToBeMoved.y1 = result[3];
             objectToBeMoved.x3 = result[4];
             objectToBeMoved.y3 = result[5];
-          } 
+          }
 
           setProperties();
           rerender();
@@ -318,7 +314,7 @@ function handleMouseMove(e) {
 function handleMouseDown(e) {
   isDragging = true;
   const { x, y } = getXY(e, canvas);
-  console.log({x, y})
+  console.log({ x, y });
 
   // draw based on dropdown value
   switch (drawItemValue) {
@@ -344,7 +340,7 @@ function handleMouseDown(e) {
         verticesDrawn = 0;
       }
       break;
-      
+
     case "triangle":
       // initiate drawing triangle
       if (verticesDrawn == 0) {
@@ -365,7 +361,7 @@ function handleMouseDown(e) {
       break;
 
     case "rectangle":
-      console.log("Mouse Down")
+      console.log("Mouse Down");
       // initiate drawing rectangle
       if (verticesDrawn == 0) {
         objectBeingDrawn.type = "rectangle";
@@ -391,7 +387,7 @@ function handleMouseDown(e) {
           objectBeingDrawn.x3 = objectBeingDrawn.x2;
           objectBeingDrawn.y3 = y;
         }
-        objectBeingDrawn.sidex = !objectBeingDrawn.sidex
+        objectBeingDrawn.sidex = !objectBeingDrawn.sidex;
         verticesDrawn++;
       } else if (verticesDrawn == 3) {
         if (objectBeingDrawn.rect == "x") {
@@ -406,59 +402,59 @@ function handleMouseDown(e) {
       }
       break;
 
-      case "square":
-        let squareLength;
-        // initiate drawing square
-        if (verticesDrawn == 0) {
-          objectBeingDrawn.type = "square";
-          objectBeingDrawn.x1 = x;
-          objectBeingDrawn.y1 = y;
-          verticesDrawn++;
-        } else if (verticesDrawn == 1) {
-          if (Math.abs(objectBeingDrawn.x1 - x) > Math.abs(objectBeingDrawn.y1 - y)) {
-            objectBeingDrawn.x2 = x;
-            objectBeingDrawn.y2 = objectBeingDrawn.y1;
-            objectBeingDrawn.sidex = true;
-          } else {
-            objectBeingDrawn.x2 = objectBeingDrawn.x1;
-            objectBeingDrawn.y2 = y;
-            objectBeingDrawn.sidex = false;
-          }
-          verticesDrawn++;
-        } else if (verticesDrawn == 2) {
-          if (!objectBeingDrawn.sidex) {
-            squareLength = Math.abs(objectBeingDrawn.y2 - objectBeingDrawn.y1);
-            if (x >= objectBeingDrawn.x2) {
-              objectBeingDrawn.x3 = objectBeingDrawn.x2 + squareLength;
-            } else {
-              objectBeingDrawn.x3 = objectBeingDrawn.x2 - squareLength;
-            }
-            objectBeingDrawn.y3 = objectBeingDrawn.y2;
-          } else {
-            squareLength = Math.abs(objectBeingDrawn.x2 - objectBeingDrawn.x1);
-            if (y >= objectBeingDrawn.y2) {
-              objectBeingDrawn.y3 = objectBeingDrawn.y2 + squareLength;
-            } else {
-              objectBeingDrawn.y3 = objectBeingDrawn.y2 - squareLength;
-            }
-            objectBeingDrawn.x3 = objectBeingDrawn.x2;
-          }
-          objectBeingDrawn.sidex = !objectBeingDrawn.sidex
-          verticesDrawn++;
-        } else if (verticesDrawn == 3) {
-          if (!objectBeingDrawn.sidex) {
-            squareLength = Math.abs(objectBeingDrawn.y2 - objectBeingDrawn.y1);
-            objectBeingDrawn.x4 = objectBeingDrawn.x1;
-            objectBeingDrawn.y4 = objectBeingDrawn.y3;
-          } else {
-            squareLength = Math.abs(objectBeingDrawn.x2 - objectBeingDrawn.x1);
-            objectBeingDrawn.x4 = objectBeingDrawn.x3;
-            objectBeingDrawn.y4 = objectBeingDrawn.y1;
-          }
-          finishDrawing();
-          verticesDrawn = 0;
+    case "square":
+      let squareLength;
+      // initiate drawing square
+      if (verticesDrawn == 0) {
+        objectBeingDrawn.type = "square";
+        objectBeingDrawn.x1 = x;
+        objectBeingDrawn.y1 = y;
+        verticesDrawn++;
+      } else if (verticesDrawn == 1) {
+        if (Math.abs(objectBeingDrawn.x1 - x) > Math.abs(objectBeingDrawn.y1 - y)) {
+          objectBeingDrawn.x2 = x;
+          objectBeingDrawn.y2 = objectBeingDrawn.y1;
+          objectBeingDrawn.sidex = true;
+        } else {
+          objectBeingDrawn.x2 = objectBeingDrawn.x1;
+          objectBeingDrawn.y2 = y;
+          objectBeingDrawn.sidex = false;
         }
-        break;
+        verticesDrawn++;
+      } else if (verticesDrawn == 2) {
+        if (!objectBeingDrawn.sidex) {
+          squareLength = Math.abs(objectBeingDrawn.y2 - objectBeingDrawn.y1);
+          if (x >= objectBeingDrawn.x2) {
+            objectBeingDrawn.x3 = objectBeingDrawn.x2 + squareLength;
+          } else {
+            objectBeingDrawn.x3 = objectBeingDrawn.x2 - squareLength;
+          }
+          objectBeingDrawn.y3 = objectBeingDrawn.y2;
+        } else {
+          squareLength = Math.abs(objectBeingDrawn.x2 - objectBeingDrawn.x1);
+          if (y >= objectBeingDrawn.y2) {
+            objectBeingDrawn.y3 = objectBeingDrawn.y2 + squareLength;
+          } else {
+            objectBeingDrawn.y3 = objectBeingDrawn.y2 - squareLength;
+          }
+          objectBeingDrawn.x3 = objectBeingDrawn.x2;
+        }
+        objectBeingDrawn.sidex = !objectBeingDrawn.sidex;
+        verticesDrawn++;
+      } else if (verticesDrawn == 3) {
+        if (!objectBeingDrawn.sidex) {
+          squareLength = Math.abs(objectBeingDrawn.y2 - objectBeingDrawn.y1);
+          objectBeingDrawn.x4 = objectBeingDrawn.x1;
+          objectBeingDrawn.y4 = objectBeingDrawn.y3;
+        } else {
+          squareLength = Math.abs(objectBeingDrawn.x2 - objectBeingDrawn.x1);
+          objectBeingDrawn.x4 = objectBeingDrawn.x3;
+          objectBeingDrawn.y4 = objectBeingDrawn.y1;
+        }
+        finishDrawing();
+        verticesDrawn = 0;
+      }
+      break;
 
     case "polygon":
       // initiate drawing polygon
@@ -468,26 +464,25 @@ function handleMouseDown(e) {
         objectBeingDrawn.originalPoints = [];
       }
       objectBeingDrawn.originalPoints.push([x, y]);
-      // filter with convex hull
-      // add point to sides array
+      // // filter with convex hull
+      // // add point to sides array
 
-      let points = convexHull(objectBeingDrawn.originalPoints);
+      // let points = convexHull(objectBeingDrawn.originalPoints);
 
-      points = removeUnusedPoints(points);
-      console.log("points");
-      console.log(points);
+      // points = removeUnusedPoints(points);
+      // console.log("points");
+      // console.log(points);
 
-      let triangles = triangulate(points);
+      // let triangles = triangulate(points);
 
-      console.log("triangles");
-      for (let i = 0; i < triangles.length; i++) {
-        console.log(triangles[i]);
-      }
-
-      objectBeingDrawn.points = points;
-      objectBeingDrawn.triangles = triangles;
-      console.log("objectBeingDrawn");
-      console.log(objectBeingDrawn);
+      // console.log("triangles");
+      // for (let i = 0; i < triangles.length; i++) {
+      //   console.log(triangles[i]);
+      // }
+      // objectBeingDrawn.points = points;
+      // objectBeingDrawn.triangles = triangles;
+      // console.log("objectBeingDrawn");
+      // console.log(objectBeingDrawn);
       verticesDrawn++;
       break;
 
@@ -802,8 +797,8 @@ function setProperties() {
       e.preventDefault();
       let x1 = transx.value / 100;
       console.log("Translation", {
-        "transx": transx,
-      })
+        transx: transx,
+      });
       let distx2 = objectToBeDrawn[clickedIndex].x2 - objectToBeDrawn[clickedIndex].x1;
       let distx3 = objectToBeDrawn[clickedIndex].x3 - objectToBeDrawn[clickedIndex].x1;
       let distx4 = objectToBeDrawn[clickedIndex].x4 - objectToBeDrawn[clickedIndex].x1;
@@ -818,8 +813,8 @@ function setProperties() {
       e.preventDefault();
       let y1 = transy.value / -100;
       console.log("Translation", {
-        "transy": transy,
-      })
+        transy: transy,
+      });
       let disty2 = objectToBeDrawn[clickedIndex].y2 - objectToBeDrawn[clickedIndex].y1;
       let disty3 = objectToBeDrawn[clickedIndex].y3 - objectToBeDrawn[clickedIndex].y1;
       let disty4 = objectToBeDrawn[clickedIndex].y4 - objectToBeDrawn[clickedIndex].y1;
@@ -829,7 +824,73 @@ function setProperties() {
       objectToBeDrawn[clickedIndex].y3 = objectToBeDrawn[clickedIndex].y1 + disty3;
       objectToBeDrawn[clickedIndex].y4 = objectToBeDrawn[clickedIndex].y1 + disty4;
       rerender();
-    })
+    });
+  } else if (objectToBeDrawn[clickedIndex].type == "polygon") {
+    console.log(objectToBeDrawn[clickedIndex]);
+    let points = objectToBeDrawn[clickedIndex].points;
+    let pointHtml = "";
+    for (let i = 0; i < points.length; i++) {
+      pointHtml += `
+        <div>
+          <h4>Point ${i + 1}</h4>
+          <div>
+            <label for="x${i + 1}">x${i + 1}</label>
+            <input id="x${i + 1}" value=${points[i][0]} />
+          </div>
+          <div>
+            <label for="y${i + 1}">y${i + 1}</label>
+            <input id="y${i + 1}" value=${points[i][1]} />
+          </div>
+          <button id="deletePoint${i + 1}">Delete</button>
+        </div>
+      `;
+    }
+
+    let colorHex = objectToBeDrawn[clickedIndex].colorHex;
+    let html = `
+      <form id="polygonProperties">
+      <div>
+        <h4>Points</h4>
+        ${pointHtml}
+      </div>
+      <div>
+        <h4>Color</h4>
+        <input type="color" id="colorHex" value=${colorHex} />
+      </div>
+      <div>
+        <button type="submit">Update</button>
+      </div>
+      </form>
+    `;
+    let properties = document.getElementById("properties");
+    properties.innerHTML = html;
+
+    // add event listener to form
+    let form = document.getElementById("polygonProperties");
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      let points = [];
+      for (let i = 0; i < objectToBeDrawn[clickedIndex].points.length; i++) {
+        let x = document.getElementById(`x${i + 1}`).value;
+        let y = document.getElementById(`y${i + 1}`).value;
+        points.push([x, y]);
+      }
+      let colorHex = document.getElementById("colorHex").value;
+      objectToBeDrawn[clickedIndex].points = points;
+      objectToBeDrawn[clickedIndex].colorHex = colorHex;
+      rerender();
+    });
+    // handle on delete
+    for (let i = 0; i < points.length; i++) {
+      let deletePoint = document.getElementById(`deletePoint${i + 1}`);
+      deletePoint.addEventListener("click", function (e) {
+        e.preventDefault();
+        objectToBeDrawn[clickedIndex].points.splice(i, 1);
+        // recalculate triangle
+
+        rerender();
+      });
+    }
   }
 }
 
@@ -861,8 +922,8 @@ document.addEventListener("keydown", function (e) {
 });
 
 function translation(object, x, y) {
-  var points = []
-  if(object.type == "point") {
+  var points = [];
+  if (object.type == "point") {
     points.push(object.x);
     points.push(object.y);
   } else if (object.type == "line") {
@@ -890,7 +951,7 @@ function translation(object, x, y) {
 
   points = moveTranslation(points, x, y);
 
-  if(object.type == "point") {
+  if (object.type == "point") {
     object.x = points[0];
     object.y = points[1];
   } else if (object.type == "line") {
@@ -919,9 +980,9 @@ function translation(object, x, y) {
 
 // Translation
 function moveTranslation(points, x, y) {
-  for (let i = 0; i <= points.length; i+=2) {
+  for (let i = 0; i <= points.length; i += 2) {
     points[i] += x;
-    points[i+1] += y;
+    points[i + 1] += y;
   }
   return points;
 }
@@ -952,12 +1013,11 @@ let tempPoints = [
 // }
 createPolygon(tempPoints);
 
-
 // rectangle
-let points = [ 0.2, 0.2, 0.2, -0.2, -0.2, -0.2];
+let points = [0.2, 0.2, 0.2, -0.2, -0.2, -0.2];
 // rectangle(points, "#FFFF00");
 
-triangle(points, "#FFFF00")
+triangle(points, "#FFFF00");
 
 // update canvas
 rerender();

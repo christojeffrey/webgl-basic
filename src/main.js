@@ -1175,7 +1175,8 @@ function setProperties() {
     let points = objectToBeDrawn[clickedIndex].points;
     let degree = objectToBeDrawn[clickedIndex].degree;
     let center = findCenterPolygon(points);
-    // objectToBeDrawn[clickedIndex].center = center;
+    let originalPoints = objectToBeDrawn[clickedIndex].originalPoints;
+    objectToBeDrawn[clickedIndex].center = center;
     console.log(objectToBeDrawn[clickedIndex]);
     let pointHtml = "";
     for (let i = 0; i < points.length; i++) {
@@ -1214,9 +1215,9 @@ function setProperties() {
       <div id="translation">
         <h4>Translation</h4>
         <label for="trans-x">x</label>
-        <input type="range" min=-100 max=100 value=${points[0][0]} class="slider" id="trans-x"/> <p></p>
+        <input type="range" min=-100 max=100 value=${originalPoints[0][0]*100} class="slider" id="trans-x"/> <p></p>
         <label for="trans-y">y</label>
-        <input type="range" min=-100 max=100 value=${points[0][1]} class="slider" id="trans-y"/>
+        <input type="range" min=-100 max=100 value=${originalPoints[0][1]*100} class="slider" id="trans-y"/>
       </div>
       <div id="rotation">
         <h4>Rotation</h4>
@@ -1231,14 +1232,14 @@ function setProperties() {
     let form = document.getElementById("polygonProperties");
     form.addEventListener("submit", function (e) {
       e.preventDefault();
-      let points = [];
+      let temporaryPoints = [];
       for (let i = 0; i < objectToBeDrawn[clickedIndex].points.length; i++) {
         let x = document.getElementById(`x${i + 1}`).value;
         let y = document.getElementById(`y${i + 1}`).value;
-        points.push([x, y]);
+        temporaryPoints.push([x, y]);
       }
       let colorHex = document.getElementById("colorHex").value;
-      objectToBeDrawn[clickedIndex].points = points;
+      objectToBeDrawn[clickedIndex].originalPoints = temporaryPoints;
       objectToBeDrawn[clickedIndex].colorHex = colorHex;
       rerender();
     });
@@ -1246,43 +1247,56 @@ function setProperties() {
     let transx = document.getElementById("trans-x");
     transx.addEventListener("input", function (e) {
       e.preventDefault();
-      let originalPoints = objectToBeDrawn[clickedIndex].originalPoints;
+      let temporiginalPoints = objectToBeDrawn[clickedIndex].originalPoints;
       let dist = [];
       let xmover = transx.value / 100;
       console.log("Polygon", objectToBeDrawn[clickedIndex])
 
-      for (let i=0; i<originalPoints.length; i++) {
-        originalPoints[i][0] = originalPoints[i][0] + xmover;
+      for (let i=0; i<temporiginalPoints.length; i++) {
+        let tempx = temporiginalPoints[i][0] - temporiginalPoints[0][0];
+        let tempy = temporiginalPoints[i][1] - temporiginalPoints[0][1];
+        dist.push([tempx, tempy]);
       }
 
-      objectToBeDrawn[clickedIndex].originalPoints = originalPoints;
+      temporiginalPoints[0][0] = xmover;
+
+      let newOriginalPoints = [];
+
+      for (let i=0; i<temporiginalPoints.length; i++) {
+        let tempx = temporiginalPoints[0][0] + dist[i][0];
+        let tempy = temporiginalPoints[0][1] + dist[i][1];
+        newOriginalPoints.push([tempx, tempy]);
+      }
+
+      objectToBeDrawn[clickedIndex].originalPoints = newOriginalPoints;
       rerender();
     });
 
     let transy = document.getElementById("trans-y");
     transy.addEventListener("input", function (e) {
       e.preventDefault();
-      
+      let temporiginalPoints = objectToBeDrawn[clickedIndex].originalPoints;
       let dist = [];
-      points[0][1] = transy.value / 100;
+      let ymover = transy.value / -100;
+      console.log("Polygon", objectToBeDrawn[clickedIndex])
 
-      for (let i=0; i<points.length; i++) {
-        let tempy = points[i][1] - points[0][1];
-        dist.push([0, tempy]);
+      for (let i=0; i<temporiginalPoints.length; i++) {
+        let tempx = temporiginalPoints[i][0] - temporiginalPoints[0][0];
+        let tempy = temporiginalPoints[i][1] - temporiginalPoints[0][1];
+        dist.push([tempx, tempy]);
       }
 
-      let newPoints = [];
+      temporiginalPoints[0][1] = ymover;
 
-      for (let i=0; i<points.length; i++) {
-        let tempx = points[0][0] + dist[i][0];
-        let tempy = points[0][1] + dist[i][1];
-        newPoints.push([tempx, tempy]);
-        objectToBeDrawn[clickedIndex].originalPoints[i][0] = tempx;
-        objectToBeDrawn[clickedIndex].originalPoints[i][1] = tempy;
+      let newOriginalPoints = [];
+
+      for (let i=0; i<temporiginalPoints.length; i++) {
+        let tempx = temporiginalPoints[0][0] + dist[i][0];
+        let tempy = temporiginalPoints[0][1] + dist[i][1];
+        newOriginalPoints.push([tempx, tempy]);
       }
-      let newCenter = findCenterPolygon(newPoints);
-      objectToBeDrawn[clickedIndex].points = newPoints;
-      objectToBeDrawn[clickedIndex].center = newCenter;
+
+      objectToBeDrawn[clickedIndex].originalPoints = newOriginalPoints;
       rerender();
     });
 
@@ -1290,19 +1304,22 @@ function setProperties() {
     rotate.addEventListener("input", function (e) {
       e.preventDefault();
       let degree = (rotate.value * Math.PI) / 180;
-      let startx1 = objectToBeDrawn[clickedIndex].x1;
-      let starty1 = objectToBeDrawn[clickedIndex].y1;
-      let startx2 = objectToBeDrawn[clickedIndex].x2;
-      let starty2 = objectToBeDrawn[clickedIndex].y2;
-      let startx3 = objectToBeDrawn[clickedIndex].x3;
-      let starty3 = objectToBeDrawn[clickedIndex].y3;
-      let centerx = objectToBeDrawn[clickedIndex].centerx;
-      let centery = objectToBeDrawn[clickedIndex].centery;
-      console.log("Center", { x: centerx, y: centery });
+      let center = objectToBeDrawn[clickedIndex].center;
+      console.log("Center", { center });
 
       // x' = x cos B - y sin B
       // y' = X sin B + y cos B
       // z = z
+
+      let move = [];
+
+      for (let i=0; i<temporiginalPoints.length; i++) {
+        let tempx = temporiginalPoints[i][0] - center[0];
+        let tempy = temporiginalPoints[i][1] - center[1];
+        move.push([tempx, tempy]);
+      }
+
+      let newOriginalPoints = [];
 
       let tempx1 = startx1 - centerx;
       let tempy1 = starty1 - centery;

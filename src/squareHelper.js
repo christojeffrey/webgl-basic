@@ -15,7 +15,8 @@ function isBottomRight(x1, y1, x2, y2, x4, y4) {
 }
 
 function resizeSquare(x, y, x1, y1, x2, y2, x4, y4) {
-    var length = Math.sqrt(Math.pow(x1 - x, 2) + Math.pow(y1 - y, 2));
+    // var length = Math.sqrt(Math.pow(x1 - x, 2) + Math.pow(y1 - y, 2));
+    var length = Math.abs(x1 - x);
     var x1t = x1;
     var y1t = y1;
     var x2t = x2;
@@ -52,7 +53,7 @@ function resizeSquare(x, y, x1, y1, x2, y2, x4, y4) {
             x1t = x1 - length;
             y1t = y1 - length;
             
-            if (x2 > x1) {
+            if (x1 > x2) {
                 y2t = y2 - length;
                 x4t = x4 - length;
             } else {
@@ -63,7 +64,7 @@ function resizeSquare(x, y, x1, y1, x2, y2, x4, y4) {
             x1t = x1 + length;
             y1t = y1 + length;
             
-            if (x2 > x1) {
+            if (x1 > x2) {
                 y2t = y2 + length;
                 x4t = x4 + length;
             } else {
@@ -100,7 +101,7 @@ function resizeSquare(x, y, x1, y1, x2, y2, x4, y4) {
             x1t = x1 - length;
             y1t = y1 + length;
             
-            if (x2 > x1) {
+            if (x1 > x2) {
                 y2t = y2 + length;
                 x4t = x4 - length;
             } else {
@@ -111,7 +112,7 @@ function resizeSquare(x, y, x1, y1, x2, y2, x4, y4) {
             x1t = x1 + length;
             y1t = y1 - length;
             
-            if (x2 > x1) {
+            if (x1 > x2) {
                 y2t = y2 - length;
                 x4t = x4 + length;
             } else {
@@ -119,6 +120,8 @@ function resizeSquare(x, y, x1, y1, x2, y2, x4, y4) {
                 x2t = x2 + length;
             }
         }
+    } else {
+        console.log("Not a square");
     }
     var result = [x1t, y1t, x2t, y2t, x4t, y4t];
     return result;

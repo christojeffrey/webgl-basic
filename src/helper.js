@@ -264,17 +264,17 @@ function drawTriangle() {
 }
 
 function rectangle([x1, y1, x2, y2, x3, y3, x4, y4], colorHex) {
-  console.log("Rectangle is creating")
+  console.log("Rectangle is creating");
   console.log({
-    "x1": x1,
-    "y1": y1,
-    "x2": x2,
-    "y2": y2,
-    "x3": x3,
-    "y3": y3,
-    "x4": x4,
-    "y4": y4,
-  })
+    x1: x1,
+    y1: y1,
+    x2: x2,
+    y2: y2,
+    x3: x3,
+    y3: y3,
+    x4: x4,
+    y4: y4,
+  });
 
   if (!vertex_buffer) {
     vertex_buffer = gl.createBuffer();
@@ -285,11 +285,11 @@ function rectangle([x1, y1, x2, y2, x3, y3, x4, y4], colorHex) {
 
   // First Triangle
   points = [...points, x1, y1, 0.0, x2, y2, 0.0, x3, y3, 0.0, x4, y4, 0.0];
-  indexes = [...indexes, points.length / 3 - 4, points.length / 3 -3, points.length / 3 - 2, points.length / 3 - 1];
+  indexes = [...indexes, points.length / 3 - 4, points.length / 3 - 3, points.length / 3 - 2, points.length / 3 - 1];
 
   gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(points), gl.STATIC_DRAW);
-  gl.bindBuffer(gl.ARRAY_BUFFER, null)
+  gl.bindBuffer(gl.ARRAY_BUFFER, null);
 
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, Index_Buffer);
   gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indexes), gl.STATIC_DRAW);
@@ -314,17 +314,17 @@ function drawRectangle() {
 }
 
 function square([x1, y1, x2, y2, x3, y3, x4, y4], colorHex) {
-  console.log("Square is creating")
+  console.log("Square is creating");
   console.log({
-    "x1": x1,
-    "y1": y1,
-    "x2": x2,
-    "y2": y2,
-    "x3": x3,
-    "y3": y3,
-    "x4": x4,
-    "y4": y4,
-  })
+    x1: x1,
+    y1: y1,
+    x2: x2,
+    y2: y2,
+    x3: x3,
+    y3: y3,
+    x4: x4,
+    y4: y4,
+  });
 
   if (!vertex_buffer) {
     vertex_buffer = gl.createBuffer();
@@ -335,11 +335,11 @@ function square([x1, y1, x2, y2, x3, y3, x4, y4], colorHex) {
 
   // First Triangle
   points = [...points, x1, y1, 0.0, x2, y2, 0.0, x3, y3, 0.0, x4, y4, 0.0];
-  indexes = [...indexes, points.length / 3 - 4, points.length / 3 -3, points.length / 3 - 2, points.length / 3 - 1];
+  indexes = [...indexes, points.length / 3 - 4, points.length / 3 - 3, points.length / 3 - 2, points.length / 3 - 1];
 
   gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(points), gl.STATIC_DRAW);
-  gl.bindBuffer(gl.ARRAY_BUFFER, null)
+  gl.bindBuffer(gl.ARRAY_BUFFER, null);
 
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, Index_Buffer);
   gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indexes), gl.STATIC_DRAW);
@@ -363,14 +363,31 @@ function drawSquare() {
   gl.drawElements(gl.POINTS, 1, gl.UNSIGNED_SHORT, offset + 6);
 }
 
-
 // polygon
-function polygon(triangles, colorHex) {
+function polygon(object, colorHex) {
+  let originalPoints = object.originalPoints;
+  // filter with convex hull
+  // add point to sides array
+  console.log("originalPoints", originalPoints);
+  let filteredPoints = convexHull(originalPoints);
+
+  filteredPoints = removeUnusedPoints(filteredPoints);
+  console.log("filteredPoints");
+  console.log(filteredPoints);
+
+  let triangles = triangulate(filteredPoints);
+
+  object.triangles = triangles;
+  object.points = filteredPoints;
+
+  console.log("!!!!!!!!");
+  console.log("triangles", triangles);
   // setup temporary drawnItems.
   // only need to do this to polygon, since it's created using multiple triangles. which made the offset changes while it is being drawn.
   drawnItems.push({
     type: "polygon",
     triangles: [],
+    points: filteredPoints,
   });
 
   // draw many triangles
@@ -378,6 +395,7 @@ function polygon(triangles, colorHex) {
   for (let i = 0; i < triangles.length; i++) {
     // flatten
     let toBeDrawn = triangles[i].flat();
+    console.log("flatenned", toBeDrawn);
     let x1 = toBeDrawn[0];
     let y1 = toBeDrawn[1];
     let x2 = toBeDrawn[2];
@@ -413,13 +431,14 @@ function polygon(triangles, colorHex) {
     drawnItems.push({
       type: "polygon",
       triangles: drawnTriangles,
+      points: filteredPoints,
     });
   }
   drawnItems.pop();
 }
 
 // line
-function line(x1, y1, x2, y2) {
+function line(x1, y1, x2, y2, colorHex) {
   if (!vertex_buffer) {
     vertex_buffer = gl.createBuffer();
   }
@@ -440,7 +459,7 @@ function line(x1, y1, x2, y2) {
   gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indexes), gl.STATIC_DRAW);
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
 
-  objectToPixel(vertex_buffer, Index_Buffer);
+  objectToPixel(vertex_buffer, Index_Buffer, colorHex);
 
   drawLine();
 }
@@ -460,7 +479,7 @@ function drawLine() {
 // drawing helper
 function finishDrawing() {
   // update objectToBeDrawn, objectBeingDrawn
-  console.log("Draw Finished")
+  console.log("Draw Finished");
   if (objectBeingDrawn) {
     objectToBeDrawn.push(objectBeingDrawn);
     objectBeingDrawn = {};
@@ -471,7 +490,7 @@ function drawObject(object) {
   if (object.type == "point") {
     point(object.x, object.y, object.colorHex);
   } else if (object.type == "line") {
-    line(object.x1, object.y1, object.x2, object.y2);
+    line(object.x1, object.y1, object.x2, object.y2, object.colorHex);
   } else if (object.type == "triangle") {
     // to handle animation, if x3, y3 is not defined, draw a line instead
     if (object.x3 == undefined || object.y3 == undefined) {
@@ -485,17 +504,17 @@ function drawObject(object) {
     } else if (object.x4 == undefined || object.y3 == undefined) {
       triangle([object.x1, object.y1, object.x2, object.y2, object.x3, object.y3], object.colorHex);
     } else {
-      rectangle([object.x1, object.y1, object.x2, object.y2, object.x3, object.y3, object.x4, object.y4], object.colorHex)
+      rectangle([object.x1, object.y1, object.x2, object.y2, object.x3, object.y3, object.x4, object.y4], object.colorHex);
     }
   } else if (object.type == "polygon") {
-    polygon(object.triangles, object.colorHex);
+    polygon(object, object.colorHex);
   } else if (object.type == "square") {
     if (object.x3 == undefined || object.y3 == undefined) {
       line(object.x1, object.y1, object.x2, object.y2);
     } else if (object.x4 == undefined || object.y3 == undefined) {
       triangle([object.x1, object.y1, object.x2, object.y2, object.x3, object.y3], object.colorHex);
     } else {
-      square([object.x1, object.y1, object.x2, object.y2, object.x3, object.y3, object.x4, object.y4], object.colorHex)
+      square([object.x1, object.y1, object.x2, object.y2, object.x3, object.y3, object.x4, object.y4], object.colorHex);
     }
   }
   drawnItems.push(object);

@@ -2,6 +2,7 @@ import { createCanvas, rerender, cancelDrawing, createPoint, setBackground, fini
 import { getXY } from "./utils.js";
 import { convexHull, removeUnusedPoints, triangulate } from "./polygonHelper.js";
 import { rectangle, triangle, square } from "./helper.js"
+import { resizeSquare } from "./squareHelper.js";
 
 const TOLERANCE = 0.01;
 
@@ -130,7 +131,7 @@ function handleMouseMove(e) {
             }
           }
 
-          if (item.type == "rectangle") {
+          if (item.type == "rectangle" || item.type == "square") {
             if (Math.abs(item.x1 - x) < TOLERANCE && Math.abs(item.y1 - y) < TOLERANCE) {
               objectToBeMoved = item;
               clickedIndex = i;
@@ -238,6 +239,52 @@ function handleMouseMove(e) {
               } 
             }
           
+          setProperties();
+          rerender();
+        } else if (objectToBeMoved.type == "square") {
+          let x1 = objectToBeMoved.x1;
+          let y1 = objectToBeMoved.y1;
+          let x2 = objectToBeMoved.x2;
+          let y2 = objectToBeMoved.y2;
+          let x3 = objectToBeMoved.x3;
+          let y3 = objectToBeMoved.y3;
+          let x4 = objectToBeMoved.x4;
+          let y4 = objectToBeMoved.y4;
+
+          if (clickedPoint == 1) {
+            let result = resizeSquare(x, y, x1, y1, x2, y2, x4, y4);
+            objectToBeMoved.x1 = result[0];
+            objectToBeMoved.y1 = result[1];
+            objectToBeMoved.x2 = result[2];
+            objectToBeMoved.y2 = result[3];
+            objectToBeMoved.x4 = result[4];
+            objectToBeMoved.y4 = result[5];
+          } else if (clickedPoint == 2) {
+            let result = resizeSquare(x, y, x2, y2, x3, y3, x1, y1);
+            objectToBeMoved.x2 = result[0];
+            objectToBeMoved.y2 = result[1];
+            objectToBeMoved.x3 = result[2];
+            objectToBeMoved.y3 = result[3];
+            objectToBeMoved.x1 = result[4];
+            objectToBeMoved.y1 = result[5];
+          } else if (clickedPoint == 3) {
+            let result = resizeSquare(x, y, x3, y3, x4, y4, x2, y2);
+            objectToBeMoved.x3 = result[0];
+            objectToBeMoved.y3 = result[1];
+            objectToBeMoved.x4 = result[2];
+            objectToBeMoved.y4 = result[3];
+            objectToBeMoved.x2 = result[4];
+            objectToBeMoved.y2 = result[5];
+          } else if (clickedPoint == 4) {
+            let result = resizeSquare(x, y, x4, y4, x1, y1, x3, y3);
+            objectToBeMoved.x4 = result[0];
+            objectToBeMoved.y4 = result[1];
+            objectToBeMoved.x1 = result[2];
+            objectToBeMoved.y1 = result[3];
+            objectToBeMoved.x3 = result[4];
+            objectToBeMoved.y3 = result[5];
+          } 
+
           setProperties();
           rerender();
         }

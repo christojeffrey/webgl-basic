@@ -1,7 +1,7 @@
 import { createCanvas, rerender, cancelDrawing, createPoint, setBackground, finishDrawing, createPolygon, createLine, objectToBeDrawn, objectBeingDrawn } from "./mainInterface.js";
 import { getXY } from "./utils.js";
 import { convexHull, removeUnusedPoints, triangulate } from "./polygonHelper.js";
-import { rectangle, triangle, square } from "./helper.js"
+import { rectangle, triangle, square } from "./helper.js";
 import { resizeSquare } from "./squareHelper.js";
 
 const TOLERANCE = 0.01;
@@ -75,14 +75,12 @@ function handleMouseHover(_) {
 
 // Handle mouse on move, used to handle dragging, and drawing animation
 function handleMouseMove(e) {
-
   // Handle mouse in drag
   if (isDragging) {
     const { x, y } = getXY(e, canvas);
 
     // HANDLE MOVING OBJECT BY DRAGGING
     if (drawItemValue == "none") {
-
       // get the object that is being dragged
       if (objectToBeMoved == null) {
         for (let i = 0; i < objectToBeDrawn.length; i++) {
@@ -168,7 +166,6 @@ function handleMouseMove(e) {
 
           setProperties();
           rerender();
-
         } else if (objectToBeMoved.type == "line") {
           if (clickedPoint == 1) {
             objectToBeMoved.x1 = x;
@@ -177,12 +174,11 @@ function handleMouseMove(e) {
             objectToBeMoved.x2 = x;
             objectToBeMoved.y2 = y;
           }
-          objectToBeMoved.centerx = (Math.max(objectToBeMoved.x1,objectToBeMoved.x2)+Math.min(objectToBeMoved.x1,objectToBeMoved.x2))/2;
-          objectToBeMoved.centery = (Math.max(objectToBeMoved.y1,objectToBeMoved.y2)+Math.min(objectToBeMoved.y1,objectToBeMoved.y2))/2;
+          objectToBeMoved.centerx = (Math.max(objectToBeMoved.x1, objectToBeMoved.x2) + Math.min(objectToBeMoved.x1, objectToBeMoved.x2)) / 2;
+          objectToBeMoved.centery = (Math.max(objectToBeMoved.y1, objectToBeMoved.y2) + Math.min(objectToBeMoved.y1, objectToBeMoved.y2)) / 2;
 
           setProperties();
           rerender();
-
         } else if (objectToBeMoved.type == "triangle") {
           if (clickedPoint == 1) {
             objectToBeMoved.x1 = x;
@@ -194,57 +190,57 @@ function handleMouseMove(e) {
             objectToBeMoved.x3 = x;
             objectToBeMoved.y3 = y;
           }
-          objectToBeMoved.centerx = (Math.max(objectToBeMoved.x1,objectToBeMoved.x2,objectToBeMoved.x3)+Math.min(objectToBeMoved.x1,objectToBeMoved.x2,objectToBeMoved.x3))/2;
-          objectToBeMoved.centery = (Math.max(objectToBeMoved.y1,objectToBeMoved.y2,objectToBeMoved.y3)+Math.min(objectToBeMoved.y1,objectToBeMoved.y2,objectToBeMoved.y3))/2;
+          objectToBeMoved.centerx = (Math.max(objectToBeMoved.x1, objectToBeMoved.x2, objectToBeMoved.x3) + Math.min(objectToBeMoved.x1, objectToBeMoved.x2, objectToBeMoved.x3)) / 2;
+          objectToBeMoved.centery = (Math.max(objectToBeMoved.y1, objectToBeMoved.y2, objectToBeMoved.y3) + Math.min(objectToBeMoved.y1, objectToBeMoved.y2, objectToBeMoved.y3)) / 2;
           setProperties();
           rerender();
         } else if (objectToBeMoved.type == "rectangle") {
-            if (clickedPoint == 1) {
-              console.log("Click: 1")
-              objectToBeMoved.x1 = x;
-              objectToBeMoved.y1 = y;
-              if (objectToBeMoved.rect == "y") {
-                objectToBeMoved.x2 = x;
-                objectToBeMoved.y4 = y;
-              } else {
-                objectToBeMoved.x4 = x;
-                objectToBeMoved.y2 = y;
-              } 
-            } else if (clickedPoint == 2) {
-              console.log("Click: 2")
+          if (clickedPoint == 1) {
+            console.log("Click: 1");
+            objectToBeMoved.x1 = x;
+            objectToBeMoved.y1 = y;
+            if (objectToBeMoved.rect == "y") {
               objectToBeMoved.x2 = x;
-              objectToBeMoved.y2 = y;
-              if (objectToBeMoved.rect == "y") {
-                objectToBeMoved.x1 = x;
-                objectToBeMoved.y3 = y;
-              } else {
-                objectToBeMoved.x3 = x;
-                objectToBeMoved.y1 = y;
-              } 
-            } else if (clickedPoint == 3) {
-              console.log("Click: 3")
-              objectToBeMoved.x3 = x;
-              objectToBeMoved.y3 = y;
-              if (objectToBeMoved.rect == "y") {
-                objectToBeMoved.x4 = x;
-                objectToBeMoved.y2 = y;
-              } else {
-                objectToBeMoved.x2 = x;
-                objectToBeMoved.y4 = y;
-              } 
-            } else if (clickedPoint == 4) {
-              console.log("Click: 4")
-              objectToBeMoved.x4 = x;
               objectToBeMoved.y4 = y;
-              if (objectToBeMoved.rect == "y") {
-                objectToBeMoved.x3 = x;
-                objectToBeMoved.y1 = y;
-              } else {
-                objectToBeMoved.x1 = x;
-                objectToBeMoved.y3 = y;
-              } 
+            } else {
+              objectToBeMoved.x4 = x;
+              objectToBeMoved.y2 = y;
             }
-          
+          } else if (clickedPoint == 2) {
+            console.log("Click: 2");
+            objectToBeMoved.x2 = x;
+            objectToBeMoved.y2 = y;
+            if (objectToBeMoved.rect == "y") {
+              objectToBeMoved.x1 = x;
+              objectToBeMoved.y3 = y;
+            } else {
+              objectToBeMoved.x3 = x;
+              objectToBeMoved.y1 = y;
+            }
+          } else if (clickedPoint == 3) {
+            console.log("Click: 3");
+            objectToBeMoved.x3 = x;
+            objectToBeMoved.y3 = y;
+            if (objectToBeMoved.rect == "y") {
+              objectToBeMoved.x4 = x;
+              objectToBeMoved.y2 = y;
+            } else {
+              objectToBeMoved.x2 = x;
+              objectToBeMoved.y4 = y;
+            }
+          } else if (clickedPoint == 4) {
+            console.log("Click: 4");
+            objectToBeMoved.x4 = x;
+            objectToBeMoved.y4 = y;
+            if (objectToBeMoved.rect == "y") {
+              objectToBeMoved.x3 = x;
+              objectToBeMoved.y1 = y;
+            } else {
+              objectToBeMoved.x1 = x;
+              objectToBeMoved.y3 = y;
+            }
+          }
+
           setProperties();
           rerender();
         } else if (objectToBeMoved.type == "square") {
@@ -289,7 +285,7 @@ function handleMouseMove(e) {
             objectToBeMoved.y1 = result[3];
             objectToBeMoved.x3 = result[4];
             objectToBeMoved.y3 = result[5];
-          } 
+          }
 
           setProperties();
           rerender();
@@ -351,13 +347,13 @@ function handleMouseDown(e) {
       } else if (verticesDrawn == 1) {
         objectBeingDrawn.x2 = x;
         objectBeingDrawn.y2 = y;
-        objectBeingDrawn.centerx = (Math.max(objectBeingDrawn.x1, objectBeingDrawn.x2)+Math.min(objectBeingDrawn.x1, objectBeingDrawn.x2))/2
-        objectBeingDrawn.centery = (Math.max(objectBeingDrawn.y1, objectBeingDrawn.y2)+Math.min(objectBeingDrawn.y1, objectBeingDrawn.y2))/2
+        objectBeingDrawn.centerx = (Math.max(objectBeingDrawn.x1, objectBeingDrawn.x2) + Math.min(objectBeingDrawn.x1, objectBeingDrawn.x2)) / 2;
+        objectBeingDrawn.centery = (Math.max(objectBeingDrawn.y1, objectBeingDrawn.y2) + Math.min(objectBeingDrawn.y1, objectBeingDrawn.y2)) / 2;
         finishDrawing();
         verticesDrawn = 0;
       }
       break;
-      
+
     case "triangle":
       // initiate drawing triangle
       if (verticesDrawn == 0) {
@@ -373,8 +369,8 @@ function handleMouseDown(e) {
       } else if (verticesDrawn == 2) {
         objectBeingDrawn.x3 = x;
         objectBeingDrawn.y3 = y;
-        objectBeingDrawn.centerx = (Math.max(objectBeingDrawn.x1, objectBeingDrawn.x2, objectBeingDrawn.x3)+Math.min(objectBeingDrawn.x1, objectBeingDrawn.x2, objectBeingDrawn.x3))/2
-        objectBeingDrawn.centery = (Math.max(objectBeingDrawn.y1, objectBeingDrawn.y2, objectBeingDrawn.y3)+Math.min(objectBeingDrawn.y1, objectBeingDrawn.y2, objectBeingDrawn.y3))/2
+        objectBeingDrawn.centerx = (Math.max(objectBeingDrawn.x1, objectBeingDrawn.x2, objectBeingDrawn.x3) + Math.min(objectBeingDrawn.x1, objectBeingDrawn.x2, objectBeingDrawn.x3)) / 2;
+        objectBeingDrawn.centery = (Math.max(objectBeingDrawn.y1, objectBeingDrawn.y2, objectBeingDrawn.y3) + Math.min(objectBeingDrawn.y1, objectBeingDrawn.y2, objectBeingDrawn.y3)) / 2;
         finishDrawing();
         verticesDrawn = 0;
       }
@@ -421,58 +417,59 @@ function handleMouseDown(e) {
       }
       break;
 
-      case "square":
-        let squareLength;
-        // initiate drawing square
-        if (verticesDrawn == 0) {
-          objectBeingDrawn.type = "square";
-          objectBeingDrawn.x1 = x;
-          objectBeingDrawn.y1 = y;
-          console.log("OAKWOAWKOAWK");
-          verticesDrawn++;
-        } else if (verticesDrawn == 1) {
-          if (Math.abs(objectBeingDrawn.x1 - x) > Math.abs(objectBeingDrawn.y1 - y)) {
-            objectBeingDrawn.x2 = x;
-            objectBeingDrawn.y2 = objectBeingDrawn.y1;
-          } else {
-            objectBeingDrawn.x2 = objectBeingDrawn.x1;
-            objectBeingDrawn.y2 = y;
-          }
-          console.log("aAKWOAKWOFAOSFKSAFSD????");
-          verticesDrawn++;
-        } else if (verticesDrawn == 2) {
-          if (objectBeingDrawn.rect == "y") {
-            squareLength = Math.abs(objectBeingDrawn.y2 - objectBeingDrawn.y1);
-            if (x >= objectBeingDrawn.x2) {
-              objectBeingDrawn.x3 = objectBeingDrawn.x2 + squareLength;
-            } else {
-              objectBeingDrawn.x3 = objectBeingDrawn.x2 - squareLength;
-            }
-            objectBeingDrawn.y3 = objectBeingDrawn.y2;
-          } else {
-            squareLength = Math.abs(objectBeingDrawn.x2 - objectBeingDrawn.x1);
-            if (y >= objectBeingDrawn.y2) {
-              objectBeingDrawn.y3 = objectBeingDrawn.y2 + squareLength;
-            } else {
-              objectBeingDrawn.y3 = objectBeingDrawn.y2 - squareLength;
-            }
-            objectBeingDrawn.x3 = objectBeingDrawn.x2;
-          }
-          verticesDrawn++;
-        } else if (verticesDrawn == 3) {
-          if (objectBeingDrawn.rect == "x") {
-            squareLength = Math.abs(objectBeingDrawn.y2 - objectBeingDrawn.y1);
-            objectBeingDrawn.x4 = objectBeingDrawn.x1;
-            objectBeingDrawn.y4 = objectBeingDrawn.y3;
-          } else {
-            squareLength = Math.abs(objectBeingDrawn.x2 - objectBeingDrawn.x1);
-            objectBeingDrawn.x4 = objectBeingDrawn.x3;
-            objectBeingDrawn.y4 = objectBeingDrawn.y1;
-          }
-          finishDrawing();
-          verticesDrawn = 0;
+    case "square":
+      let squareLength;
+      // initiate drawing square
+      if (verticesDrawn == 0) {
+        objectBeingDrawn.type = "square";
+        objectBeingDrawn.x1 = x;
+        objectBeingDrawn.y1 = y;
+        verticesDrawn++;
+      } else if (verticesDrawn == 1) {
+        if (Math.abs(objectBeingDrawn.x1 - x) > Math.abs(objectBeingDrawn.y1 - y)) {
+          objectBeingDrawn.x2 = x;
+          objectBeingDrawn.y2 = objectBeingDrawn.y1;
+          objectBeingDrawn.sidex = true;
+        } else {
+          objectBeingDrawn.x2 = objectBeingDrawn.x1;
+          objectBeingDrawn.y2 = y;
+          objectBeingDrawn.sidex = false;
         }
-        break;
+        verticesDrawn++;
+      } else if (verticesDrawn == 2) {
+        if (!objectBeingDrawn.sidex) {
+          squareLength = Math.abs(objectBeingDrawn.y2 - objectBeingDrawn.y1);
+          if (x >= objectBeingDrawn.x2) {
+            objectBeingDrawn.x3 = objectBeingDrawn.x2 + squareLength;
+          } else {
+            objectBeingDrawn.x3 = objectBeingDrawn.x2 - squareLength;
+          }
+          objectBeingDrawn.y3 = objectBeingDrawn.y2;
+        } else {
+          squareLength = Math.abs(objectBeingDrawn.x2 - objectBeingDrawn.x1);
+          if (y >= objectBeingDrawn.y2) {
+            objectBeingDrawn.y3 = objectBeingDrawn.y2 + squareLength;
+          } else {
+            objectBeingDrawn.y3 = objectBeingDrawn.y2 - squareLength;
+          }
+          objectBeingDrawn.x3 = objectBeingDrawn.x2;
+        }
+        objectBeingDrawn.sidex = !objectBeingDrawn.sidex;
+        verticesDrawn++;
+      } else if (verticesDrawn == 3) {
+        if (!objectBeingDrawn.sidex) {
+          squareLength = Math.abs(objectBeingDrawn.y2 - objectBeingDrawn.y1);
+          objectBeingDrawn.x4 = objectBeingDrawn.x1;
+          objectBeingDrawn.y4 = objectBeingDrawn.y3;
+        } else {
+          squareLength = Math.abs(objectBeingDrawn.x2 - objectBeingDrawn.x1);
+          objectBeingDrawn.x4 = objectBeingDrawn.x3;
+          objectBeingDrawn.y4 = objectBeingDrawn.y1;
+        }
+        finishDrawing();
+        verticesDrawn = 0;
+      }
+      break;
 
     case "polygon":
       // initiate drawing polygon
@@ -582,18 +579,18 @@ function setProperties() {
 
     let rotate = document.getElementById("rotate");
     rotate.addEventListener("input", function (e) {
-      e.preventDefault()
+      e.preventDefault();
 
       let x = document.getElementById("x").value;
       let y = document.getElementById("y").value;
-      let deg = Math.atan()
-    })
+      let deg = Math.atan();
+    });
   } else if (objectToBeDrawn[clickedIndex].type == "line") {
     let x1 = objectToBeDrawn[clickedIndex].x1;
     let y1 = objectToBeDrawn[clickedIndex].y1;
     let x2 = objectToBeDrawn[clickedIndex].x2;
     let y2 = objectToBeDrawn[clickedIndex].y2;
-    let degree = objectToBeDrawn[clickedIndex].degree
+    let degree = objectToBeDrawn[clickedIndex].degree;
     let colorHex = objectToBeDrawn[clickedIndex].colorHex;
     html = `
     <form id="lineProperties">
@@ -650,8 +647,8 @@ function setProperties() {
       objectToBeDrawn[clickedIndex].y1 = y1;
       objectToBeDrawn[clickedIndex].x2 = x2;
       objectToBeDrawn[clickedIndex].y2 = y2;
-      objectToBeDrawn[clickedIndex].centerx = (Math.max(x1,x2)+Math.min(x1,x2))/2
-      objectToBeDrawn[clickedIndex].centery = (Math.max(y1,y2)+Math.min(y1,y2))/2
+      objectToBeDrawn[clickedIndex].centerx = (Math.max(x1, x2) + Math.min(x1, x2)) / 2;
+      objectToBeDrawn[clickedIndex].centery = (Math.max(y1, y2) + Math.min(y1, y2)) / 2;
       objectToBeDrawn[clickedIndex].colorHex = colorHex;
       rerender();
     });
@@ -683,32 +680,32 @@ function setProperties() {
 
       rerender();
     });
-    
+
     let rotate = document.getElementById("rotate");
     rotate.addEventListener("input", function (e) {
       e.preventDefault();
-      let degree = rotate.value * Math.PI /180;
+      let degree = (rotate.value * Math.PI) / 180;
       let startx1 = objectToBeDrawn[clickedIndex].x1;
       let starty1 = objectToBeDrawn[clickedIndex].y1;
       let startx2 = objectToBeDrawn[clickedIndex].x2;
       let starty2 = objectToBeDrawn[clickedIndex].y2;
       let centerx = objectToBeDrawn[clickedIndex].centerx;
       let centery = objectToBeDrawn[clickedIndex].centery;
-      console.log("Center", {"x": centerx, "y": centery});
-      
+      console.log("Center", { x: centerx, y: centery });
+
       // x' = x cos B - y sin B
       // y' = X sin B + y cos B
       // z = z
 
-      let tempx1 = startx1-centerx;
-      let tempy1 = starty1-centery;
-      let tempx2 = startx2-centerx;
-      let tempy2 = starty2-centery;
+      let tempx1 = startx1 - centerx;
+      let tempy1 = starty1 - centery;
+      let tempx2 = startx2 - centerx;
+      let tempy2 = starty2 - centery;
 
-      let x1 = (tempx1 * Math.cos(degree) - tempy1 * Math.sin(degree));
-      let y1 = (tempx1 * Math.sin(degree) + tempy1 * Math.cos(degree));
-      let x2 = (tempx2 * Math.cos(degree) - tempy2 * Math.sin(degree));
-      let y2 = (tempx2 * Math.sin(degree) + tempy2 * Math.cos(degree));
+      let x1 = tempx1 * Math.cos(degree) - tempy1 * Math.sin(degree);
+      let y1 = tempx1 * Math.sin(degree) + tempy1 * Math.cos(degree);
+      let x2 = tempx2 * Math.cos(degree) - tempy2 * Math.sin(degree);
+      let y2 = tempx2 * Math.sin(degree) + tempy2 * Math.cos(degree);
 
       objectToBeDrawn[clickedIndex].x1 = x1 + centerx;
       objectToBeDrawn[clickedIndex].y1 = y1 + centery;
@@ -718,7 +715,6 @@ function setProperties() {
 
       rerender();
     });
-
   } else if (objectToBeDrawn[clickedIndex].type == "triangle") {
     let x1 = objectToBeDrawn[clickedIndex].x1;
     let y1 = objectToBeDrawn[clickedIndex].y1;
@@ -795,8 +791,8 @@ function setProperties() {
       objectToBeDrawn[clickedIndex].y2 = y2;
       objectToBeDrawn[clickedIndex].x3 = x3;
       objectToBeDrawn[clickedIndex].y3 = y3;
-      objectToBeDrawn[clickedIndex].centerx = (Math.max(x1,x2,x3)+Math.min(x1,x2,x3))/2
-      objectToBeDrawn[clickedIndex].centery = (Math.max(y1,y2,y3)+Math.min(y1,y2,y3))/2
+      objectToBeDrawn[clickedIndex].centerx = (Math.max(x1, x2, x3) + Math.min(x1, x2, x3)) / 2;
+      objectToBeDrawn[clickedIndex].centery = (Math.max(y1, y2, y3) + Math.min(y1, y2, y3)) / 2;
       objectToBeDrawn[clickedIndex].colorHex = colorHex;
       rerender();
     });
@@ -832,11 +828,11 @@ function setProperties() {
 
       rerender();
     });
-    
+
     let rotate = document.getElementById("rotate");
     rotate.addEventListener("input", function (e) {
       e.preventDefault();
-      let degree = rotate.value * Math.PI /180;
+      let degree = (rotate.value * Math.PI) / 180;
       let startx1 = objectToBeDrawn[clickedIndex].x1;
       let starty1 = objectToBeDrawn[clickedIndex].y1;
       let startx2 = objectToBeDrawn[clickedIndex].x2;
@@ -845,25 +841,25 @@ function setProperties() {
       let starty3 = objectToBeDrawn[clickedIndex].y3;
       let centerx = objectToBeDrawn[clickedIndex].centerx;
       let centery = objectToBeDrawn[clickedIndex].centery;
-      console.log("Center", {"x": centerx, "y": centery});
-      
+      console.log("Center", { x: centerx, y: centery });
+
       // x' = x cos B - y sin B
       // y' = X sin B + y cos B
       // z = z
 
-      let tempx1 = startx1-centerx;
-      let tempy1 = starty1-centery;
-      let tempx2 = startx2-centerx;
-      let tempy2 = starty2-centery;
-      let tempx3 = startx3-centerx;
-      let tempy3 = starty3-centery;
+      let tempx1 = startx1 - centerx;
+      let tempy1 = starty1 - centery;
+      let tempx2 = startx2 - centerx;
+      let tempy2 = starty2 - centery;
+      let tempx3 = startx3 - centerx;
+      let tempy3 = starty3 - centery;
 
-      let x1 = (tempx1 * Math.cos(degree) - tempy1 * Math.sin(degree));
-      let y1 = (tempx1 * Math.sin(degree) + tempy1 * Math.cos(degree));
-      let x2 = (tempx2 * Math.cos(degree) - tempy2 * Math.sin(degree));
-      let y2 = (tempx2 * Math.sin(degree) + tempy2 * Math.cos(degree));
-      let x3 = (tempx3 * Math.cos(degree) - tempy3 * Math.sin(degree));
-      let y3 = (tempx3 * Math.sin(degree) + tempy3 * Math.cos(degree));
+      let x1 = tempx1 * Math.cos(degree) - tempy1 * Math.sin(degree);
+      let y1 = tempx1 * Math.sin(degree) + tempy1 * Math.cos(degree);
+      let x2 = tempx2 * Math.cos(degree) - tempy2 * Math.sin(degree);
+      let y2 = tempx2 * Math.sin(degree) + tempy2 * Math.cos(degree);
+      let x3 = tempx3 * Math.cos(degree) - tempy3 * Math.sin(degree);
+      let y3 = tempx3 * Math.sin(degree) + tempy3 * Math.cos(degree);
 
       objectToBeDrawn[clickedIndex].x1 = x1 + centerx;
       objectToBeDrawn[clickedIndex].y1 = y1 + centery;
@@ -875,7 +871,6 @@ function setProperties() {
 
       rerender();
     });
-
   } else if (objectToBeDrawn[clickedIndex].type == "rectangle") {
     let x1 = objectToBeDrawn[clickedIndex].x1;
     let y1 = objectToBeDrawn[clickedIndex].y1;
@@ -998,11 +993,11 @@ function setProperties() {
       objectToBeDrawn[clickedIndex].y4 = objectToBeDrawn[clickedIndex].y1 + disty4;
       rerender();
     });
-    
+
     let rotate = document.getElementById("rotate");
     rotate.addEventListener("input", function (e) {
       e.preventDefault();
-      let degree = rotate.value * Math.PI /180;
+      let degree = (rotate.value * Math.PI) / 180;
       let startx1 = objectToBeDrawn[clickedIndex].x1;
       let starty1 = objectToBeDrawn[clickedIndex].y1;
       let startx2 = objectToBeDrawn[clickedIndex].x2;
@@ -1011,32 +1006,31 @@ function setProperties() {
       let starty3 = objectToBeDrawn[clickedIndex].y3;
       let startx4 = objectToBeDrawn[clickedIndex].x4;
       let starty4 = objectToBeDrawn[clickedIndex].y4;
-      let centerx = (Math.max(startx1, startx2, startx3, startx4) + Math.min(startx1, startx2, startx3, startx4))/2;
-      let centery = (Math.max(starty1, starty2, starty3, starty4) + Math.min(starty1, starty2, starty3, starty4))/2;
-      console.log("Center", {"x": centerx, "y": centery});
-      
+      let centerx = (Math.max(startx1, startx2, startx3, startx4) + Math.min(startx1, startx2, startx3, startx4)) / 2;
+      let centery = (Math.max(starty1, starty2, starty3, starty4) + Math.min(starty1, starty2, starty3, starty4)) / 2;
+      console.log("Center", { x: centerx, y: centery });
+
       // x' = x cos B - y sin B
       // y' = X sin B + y cos B
       // z = z
 
-      let tempx1 = startx1-centerx;
-      let tempy1 = starty1-centery;
-      let tempx2 = startx2-centerx;
-      let tempy2 = starty2-centery;
-      let tempx3 = startx3-centerx;
-      let tempy3 = starty3-centery;
-      let tempx4 = startx4-centerx;
-      let tempy4 = starty4-centery;
+      let tempx1 = startx1 - centerx;
+      let tempy1 = starty1 - centery;
+      let tempx2 = startx2 - centerx;
+      let tempy2 = starty2 - centery;
+      let tempx3 = startx3 - centerx;
+      let tempy3 = starty3 - centery;
+      let tempx4 = startx4 - centerx;
+      let tempy4 = starty4 - centery;
 
-
-      let x1 = (tempx1 * Math.cos(degree) - tempy1 * Math.sin(degree));
-      let y1 = (tempx1 * Math.sin(degree) + tempy1 * Math.cos(degree));
-      let x2 = (tempx2 * Math.cos(degree) - tempy2 * Math.sin(degree));
-      let y2 = (tempx2 * Math.sin(degree) + tempy2 * Math.cos(degree));
-      let x3 = (tempx3 * Math.cos(degree) - tempy3 * Math.sin(degree));
-      let y3 = (tempx3 * Math.sin(degree) + tempy3 * Math.cos(degree));
-      let x4 = (tempx4 * Math.cos(degree) - tempy4 * Math.sin(degree));
-      let y4 = (tempx4 * Math.sin(degree) + tempy4 * Math.cos(degree));
+      let x1 = tempx1 * Math.cos(degree) - tempy1 * Math.sin(degree);
+      let y1 = tempx1 * Math.sin(degree) + tempy1 * Math.cos(degree);
+      let x2 = tempx2 * Math.cos(degree) - tempy2 * Math.sin(degree);
+      let y2 = tempx2 * Math.sin(degree) + tempy2 * Math.cos(degree);
+      let x3 = tempx3 * Math.cos(degree) - tempy3 * Math.sin(degree);
+      let y3 = tempx3 * Math.sin(degree) + tempy3 * Math.cos(degree);
+      let x4 = tempx4 * Math.cos(degree) - tempy4 * Math.sin(degree);
+      let y4 = tempx4 * Math.sin(degree) + tempy4 * Math.cos(degree);
 
       objectToBeDrawn[clickedIndex].x1 = x1 + centerx;
       objectToBeDrawn[clickedIndex].y1 = y1 + centery;
@@ -1172,11 +1166,11 @@ function setProperties() {
       objectToBeDrawn[clickedIndex].y4 = objectToBeDrawn[clickedIndex].y1 + disty4;
       rerender();
     });
-    
+
     let rotate = document.getElementById("rotate");
     rotate.addEventListener("input", function (e) {
       e.preventDefault();
-      let degree = rotate.value * Math.PI /180;
+      let degree = (rotate.value * Math.PI) / 180;
       let startx1 = objectToBeDrawn[clickedIndex].x1;
       let starty1 = objectToBeDrawn[clickedIndex].y1;
       let startx2 = objectToBeDrawn[clickedIndex].x2;
@@ -1185,32 +1179,31 @@ function setProperties() {
       let starty3 = objectToBeDrawn[clickedIndex].y3;
       let startx4 = objectToBeDrawn[clickedIndex].x4;
       let starty4 = objectToBeDrawn[clickedIndex].y4;
-      let centerx = (Math.max(startx1, startx2, startx3, startx4) + Math.min(startx1, startx2, startx3, startx4))/2;
-      let centery = (Math.max(starty1, starty2, starty3, starty4) + Math.min(starty1, starty2, starty3, starty4))/2;
-      console.log("Center", {"x": centerx, "y": centery});
-      
+      let centerx = (Math.max(startx1, startx2, startx3, startx4) + Math.min(startx1, startx2, startx3, startx4)) / 2;
+      let centery = (Math.max(starty1, starty2, starty3, starty4) + Math.min(starty1, starty2, starty3, starty4)) / 2;
+      console.log("Center", { x: centerx, y: centery });
+
       // x' = x cos B - y sin B
       // y' = X sin B + y cos B
       // z = z
 
-      let tempx1 = startx1-centerx;
-      let tempy1 = starty1-centery;
-      let tempx2 = startx2-centerx;
-      let tempy2 = starty2-centery;
-      let tempx3 = startx3-centerx;
-      let tempy3 = starty3-centery;
-      let tempx4 = startx4-centerx;
-      let tempy4 = starty4-centery;
+      let tempx1 = startx1 - centerx;
+      let tempy1 = starty1 - centery;
+      let tempx2 = startx2 - centerx;
+      let tempy2 = starty2 - centery;
+      let tempx3 = startx3 - centerx;
+      let tempy3 = starty3 - centery;
+      let tempx4 = startx4 - centerx;
+      let tempy4 = starty4 - centery;
 
-
-      let x1 = (tempx1 * Math.cos(degree) - tempy1 * Math.sin(degree));
-      let y1 = (tempx1 * Math.sin(degree) + tempy1 * Math.cos(degree));
-      let x2 = (tempx2 * Math.cos(degree) - tempy2 * Math.sin(degree));
-      let y2 = (tempx2 * Math.sin(degree) + tempy2 * Math.cos(degree));
-      let x3 = (tempx3 * Math.cos(degree) - tempy3 * Math.sin(degree));
-      let y3 = (tempx3 * Math.sin(degree) + tempy3 * Math.cos(degree));
-      let x4 = (tempx4 * Math.cos(degree) - tempy4 * Math.sin(degree));
-      let y4 = (tempx4 * Math.sin(degree) + tempy4 * Math.cos(degree));
+      let x1 = tempx1 * Math.cos(degree) - tempy1 * Math.sin(degree);
+      let y1 = tempx1 * Math.sin(degree) + tempy1 * Math.cos(degree);
+      let x2 = tempx2 * Math.cos(degree) - tempy2 * Math.sin(degree);
+      let y2 = tempx2 * Math.sin(degree) + tempy2 * Math.cos(degree);
+      let x3 = tempx3 * Math.cos(degree) - tempy3 * Math.sin(degree);
+      let y3 = tempx3 * Math.sin(degree) + tempy3 * Math.cos(degree);
+      let x4 = tempx4 * Math.cos(degree) - tempy4 * Math.sin(degree);
+      let y4 = tempx4 * Math.sin(degree) + tempy4 * Math.cos(degree);
 
       objectToBeDrawn[clickedIndex].x1 = x1 + centerx;
       objectToBeDrawn[clickedIndex].y1 = y1 + centery;
@@ -1376,12 +1369,11 @@ let tempPoints = [
 // }
 createPolygon(tempPoints);
 
-
 // rectangle
-let points = [ 0.2, 0.2, 0.2, -0.2, -0.2, -0.2];
+let points = [0.2, 0.2, 0.2, -0.2, -0.2, -0.2];
 // rectangle(points, "#FFFF00");
 
-triangle(points, "#FFFF00")
+triangle(points, "#FFFF00");
 
 // update canvas
 rerender();

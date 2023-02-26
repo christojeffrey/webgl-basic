@@ -96,9 +96,7 @@ function handleMouseMove(e) {
               clickedIndex = i;
               break;
             }
-          }
-
-          if (item.type == "line") {
+          } else if (item.type == "line") {
             if (Math.abs(item.x1 - x) < TOLERANCE && Math.abs(item.y1 - y) < TOLERANCE) {
               objectToBeMoved = item;
               clickedIndex = i;
@@ -110,9 +108,7 @@ function handleMouseMove(e) {
               clickedPoint = 2;
               break;
             }
-          }
-
-          if (item.type == "triangle") {
+          } else if (item.type == "triangle") {
             if (Math.abs(item.x1 - x) < TOLERANCE && Math.abs(item.y1 - y) < TOLERANCE) {
               objectToBeMoved = item;
               clickedIndex = i;
@@ -129,9 +125,7 @@ function handleMouseMove(e) {
               clickedPoint = 3;
               break;
             }
-          }
-
-          if (item.type == "rectangle" || item.type == "square") {
+          } else if (item.type == "rectangle" || item.type == "square") {
             if (Math.abs(item.x1 - x) < TOLERANCE && Math.abs(item.y1 - y) < TOLERANCE) {
               objectToBeMoved = item;
               clickedIndex = i;
@@ -152,6 +146,15 @@ function handleMouseMove(e) {
               clickedIndex = i;
               clickedPoint = 4;
               break;
+            }
+          } else if (item.type == "polygon") {
+            for (let j = 0; j < item.originalPoints.length; j++) {
+              if (Math.abs(item.originalPoints[j][0] - x) < TOLERANCE && Math.abs(item.originalPoints[j][1] - y) < TOLERANCE) {
+                objectToBeMoved = item;
+                clickedIndex = i;
+                clickedPoint = j;
+                break;
+              }
             }
           }
         }
@@ -285,6 +288,11 @@ function handleMouseMove(e) {
             objectToBeMoved.y3 = result[5];
           } 
 
+          setProperties();
+          rerender();
+        } else if (objectToBeMoved.type == "polygon") {
+          objectToBeMoved.originalPoints[clickedPoint][0] = x;
+          objectToBeMoved.originalPoints[clickedPoint][1] = y;
           setProperties();
           rerender();
         }
@@ -468,26 +476,6 @@ function handleMouseDown(e) {
         objectBeingDrawn.originalPoints = [];
       }
       objectBeingDrawn.originalPoints.push([x, y]);
-      // filter with convex hull
-      // add point to sides array
-
-      let points = convexHull(objectBeingDrawn.originalPoints);
-
-      points = removeUnusedPoints(points);
-      console.log("points");
-      console.log(points);
-
-      let triangles = triangulate(points);
-
-      console.log("triangles");
-      for (let i = 0; i < triangles.length; i++) {
-        console.log(triangles[i]);
-      }
-
-      objectBeingDrawn.points = points;
-      objectBeingDrawn.triangles = triangles;
-      console.log("objectBeingDrawn");
-      console.log(objectBeingDrawn);
       verticesDrawn++;
       break;
 
@@ -829,7 +817,103 @@ function setProperties() {
       objectToBeDrawn[clickedIndex].y3 = objectToBeDrawn[clickedIndex].y1 + disty3;
       objectToBeDrawn[clickedIndex].y4 = objectToBeDrawn[clickedIndex].y1 + disty4;
       rerender();
-    })
+    });
+  } else if (objectToBeDrawn[clickedIndex].type == "polygon") {
+    console.log(objectToBeDrawn[clickedIndex]);
+    let points = objectToBeDrawn[clickedIndex].points;
+    let pointHtml = "";
+    for (let i = 0; i < points.length; i++) {
+      pointHtml += `
+        <div>
+          <h4>Point ${i + 1}</h4>
+          <div>
+            <label for="x${i + 1}">x${i + 1}</label>
+            <input id="x${i + 1}" value=${points[i][0]} />
+          </div>
+          <div>
+            <label for="y${i + 1}">y${i + 1}</label>
+            <input id="y${i + 1}" value=${points[i][1]} />
+          </div>
+          <button id="deletePoint${i + 1}">Delete</button>
+        </div>
+      `;
+    }
+
+    let colorHex = objectToBeDrawn[clickedIndex].colorHex;
+    let html = `
+      <form id="polygonProperties">
+      <div>
+        <h4>Points</h4>
+        ${pointHtml}
+      </div>
+      <div>
+        <h4>Color</h4>
+        <input type="color" id="colorHex" value=${colorHex} />
+      </div>
+      <div>
+        <button type="submit">Update</button>
+      </div>
+      </form>
+      <button id="redrawPolygon">add new vertex</button>
+    `;
+    let properties = document.getElementById("properties");
+    properties.innerHTML = html;
+
+    // add event listener to form
+    let form = document.getElementById("polygonProperties");
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      let points = [];
+      for (let i = 0; i < objectToBeDrawn[clickedIndex].points.length; i++) {
+        let x = document.getElementById(`x${i + 1}`).value;
+        let y = document.getElementById(`y${i + 1}`).value;
+        points.push([x, y]);
+      }
+      let colorHex = document.getElementById("colorHex").value;
+      objectToBeDrawn[clickedIndex].points = points;
+      objectToBeDrawn[clickedIndex].colorHex = colorHex;
+      rerender();
+    });
+    // handle on delete
+    for (let i = 0; i < points.length; i++) {
+      let deletePoint = document.getElementById(`deletePoint${i + 1}`);
+      deletePoint.addEventListener("click", function (e) {
+        e.preventDefault();
+        // remove point
+        objectToBeDrawn[clickedIndex].originalPoints = objectToBeDrawn[clickedIndex].originalPoints.filter((point) => {
+          return point[0] != points[i][0] && point[1] != points[i][1];
+        });
+
+        rerender();
+        // update right nav
+        setProperties();
+      });
+    }
+    // handle redrawPolygon
+    let redrawPolygon = document.getElementById("redrawPolygon");
+    redrawPolygon.addEventListener("click", function (e) {
+      e.preventDefault();
+      drawItemValue = "polygon";
+      // change the UI
+      drawItem.value = "polygon";
+      // get the polygon object, put it in objectBeingDrawn. remove polygon object from objectToBeDrawn.
+      let prevPolygon = objectToBeDrawn[clickedIndex];
+      // remove object at clickedIndex from objectToBeDrawn using splice
+      objectToBeDrawn.splice(clickedIndex, 1);
+      // update objectBeingDrawn
+      objectBeingDrawn.type = "polygon";
+      objectBeingDrawn.originalPoints = [];
+      prevPolygon.points.forEach((e) => {
+        objectBeingDrawn.originalPoints.push(e);
+      });
+      objectBeingDrawn.colorHex = prevPolygon.colorHex;
+      verticesDrawn = prevPolygon.points.length;
+      // set rightNav to be empty
+      let properties = document.getElementById("properties");
+      properties.innerHTML = "";
+      // rerender
+      rerender();
+    });
   }
 }
 

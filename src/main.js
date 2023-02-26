@@ -286,6 +286,7 @@ function handleMouseMove(e) {
         } else if (objectToBeMoved.type == "polygon") {
           objectToBeMoved.originalPoints[clickedPoint][0] = x;
           objectToBeMoved.originalPoints[clickedPoint][1] = y;
+          objectToBeMoved.center = findCenterPolygon(objectToBeMoved.originalPoints);
           setProperties();
           rerender();
         }
@@ -1239,6 +1240,8 @@ function setProperties() {
       }
       let colorHex = document.getElementById("colorHex").value;
       objectToBeDrawn[clickedIndex].originalPoints = temporaryPoints;
+      let newCenter = findCenterPolygon(temporaryPoints);
+      objectToBeDrawn[clickedIndex].center = newCenter;
       objectToBeDrawn[clickedIndex].colorHex = colorHex;
       rerender();
     });
@@ -1266,7 +1269,8 @@ function setProperties() {
         let tempy = temporiginalPoints[0][1] + dist[i][1];
         newOriginalPoints.push([tempx, tempy]);
       }
-
+      let newCenter = findCenterPolygon(newOriginalPoints)
+      objectToBeDrawn[clickedIndex].center = newCenter;
       objectToBeDrawn[clickedIndex].originalPoints = newOriginalPoints;
       rerender();
     });
@@ -1294,7 +1298,8 @@ function setProperties() {
         let tempy = temporiginalPoints[0][1] + dist[i][1];
         newOriginalPoints.push([tempx, tempy]);
       }
-
+      let newCenter = findCenterPolygon(newOriginalPoints)
+      objectToBeDrawn[clickedIndex].center = newCenter;
       objectToBeDrawn[clickedIndex].originalPoints = newOriginalPoints;
       rerender();
     });
@@ -1303,6 +1308,7 @@ function setProperties() {
     rotate.addEventListener("input", function (e) {
       e.preventDefault();
       let temporiginalPoints = objectToBeDrawn[clickedIndex].originalPoints;
+      objectToBeDrawn[clickedIndex].degree = rotate.value
       let degree = (rotate.value * Math.PI) / 180;
       let center = objectToBeDrawn[clickedIndex].center;
       console.log("Center", { center });
@@ -1435,6 +1441,7 @@ document.addEventListener("keydown", function (e) {
     if (drawItem.value == "polygon" && verticesDrawn != 0) {
       console.log("POINTS", objectBeingDrawn);
       objectBeingDrawn.center = findCenterPolygon(objectBeingDrawn.points);
+      objectBeingDrawn.degree = 0;
       if (verticesDrawn > 2) {
         finishDrawing();
       } else {

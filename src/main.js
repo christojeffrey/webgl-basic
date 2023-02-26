@@ -318,7 +318,6 @@ function handleMouseMove(e) {
 function handleMouseDown(e) {
   isDragging = true;
   const { x, y } = getXY(e, canvas);
-  console.log({x, y})
 
   // draw based on dropdown value
   switch (drawItemValue) {
@@ -365,10 +364,10 @@ function handleMouseDown(e) {
       break;
 
     case "rectangle":
-      console.log("Mouse Down")
       // initiate drawing rectangle
       if (verticesDrawn == 0) {
         objectBeingDrawn.type = "rectangle";
+        objectBeingDrawn.degree = 0;
         objectBeingDrawn.x1 = x;
         objectBeingDrawn.y1 = y;
         verticesDrawn++;
@@ -391,7 +390,6 @@ function handleMouseDown(e) {
           objectBeingDrawn.x3 = objectBeingDrawn.x2;
           objectBeingDrawn.y3 = y;
         }
-        objectBeingDrawn.sidex = !objectBeingDrawn.sidex
         verticesDrawn++;
       } else if (verticesDrawn == 3) {
         if (objectBeingDrawn.rect == "x") {
@@ -418,15 +416,13 @@ function handleMouseDown(e) {
           if (Math.abs(objectBeingDrawn.x1 - x) > Math.abs(objectBeingDrawn.y1 - y)) {
             objectBeingDrawn.x2 = x;
             objectBeingDrawn.y2 = objectBeingDrawn.y1;
-            objectBeingDrawn.sidex = true;
           } else {
             objectBeingDrawn.x2 = objectBeingDrawn.x1;
             objectBeingDrawn.y2 = y;
-            objectBeingDrawn.sidex = false;
           }
           verticesDrawn++;
         } else if (verticesDrawn == 2) {
-          if (!objectBeingDrawn.sidex) {
+          if (objectBeingDrawn.rect == "y") {
             squareLength = Math.abs(objectBeingDrawn.y2 - objectBeingDrawn.y1);
             if (x >= objectBeingDrawn.x2) {
               objectBeingDrawn.x3 = objectBeingDrawn.x2 + squareLength;
@@ -443,10 +439,9 @@ function handleMouseDown(e) {
             }
             objectBeingDrawn.x3 = objectBeingDrawn.x2;
           }
-          objectBeingDrawn.sidex = !objectBeingDrawn.sidex
           verticesDrawn++;
         } else if (verticesDrawn == 3) {
-          if (!objectBeingDrawn.sidex) {
+          if (objectBeingDrawn.rect == "x") {
             squareLength = Math.abs(objectBeingDrawn.y2 - objectBeingDrawn.y1);
             objectBeingDrawn.x4 = objectBeingDrawn.x1;
             objectBeingDrawn.y4 = objectBeingDrawn.y3;
@@ -540,6 +535,7 @@ function setProperties() {
   if (objectToBeDrawn[clickedIndex].type == "point") {
     let x = objectToBeDrawn[clickedIndex].x;
     let y = objectToBeDrawn[clickedIndex].y;
+    let degree = objectToBeDrawn[clickedIndex].degree;
     let colorHex = objectToBeDrawn[clickedIndex].colorHex;
     // round x and y
     x = Math.round(x * 100) / 100;
@@ -562,6 +558,11 @@ function setProperties() {
       </div>
       <input type="submit">
       </form>
+      <div id="rotation">
+        <h4>Rotation</h4>
+        <label for="rotate">θ</label>
+        <input type="range" min=0 max=360 value=${degree} class="slider" id="rotate"/>
+      </div>
     `;
     let properties = document.getElementById("properties");
     properties.innerHTML = html;
@@ -579,6 +580,15 @@ function setProperties() {
       objectToBeDrawn[clickedIndex].colorHex = colorHex;
       rerender();
     });
+
+    let rotate = document.getElementById("rotate");
+    rotate.addEventListener("input", function (e) {
+      e.preventDefault()
+
+      let x = document.getElementById("x").value;
+      let y = document.getElementById("y").value;
+      let deg = Math.atan()
+    })
   } else if (objectToBeDrawn[clickedIndex].type == "line") {
     let x1 = objectToBeDrawn[clickedIndex].x1;
     let y1 = objectToBeDrawn[clickedIndex].y1;
@@ -714,6 +724,7 @@ function setProperties() {
     let y3 = objectToBeDrawn[clickedIndex].y3;
     let x4 = objectToBeDrawn[clickedIndex].x4;
     let y4 = objectToBeDrawn[clickedIndex].y4;
+    let degree = objectToBeDrawn[clickedIndex].degree;
     let colorHex = objectToBeDrawn[clickedIndex].colorHex;
     html = `
     <form id="rectangleProperties">
@@ -752,21 +763,22 @@ function setProperties() {
         <label for="y4">y4</label>
         <input id="y4" value=${y4} />
       </div>
-      <div>
-        <h4>Rotate</h4>
-        <input type="text" id="rotate" name="rotate">
-      </div>
       <input type="color" id="colorHex" name="favcolor" value=${colorHex}>
       </div>
       <input type="submit">
       </form>
       <div id="translation">
         <h4>Translation</h4>
-        <p>x</p>
-        <input type="range" min=-100 max=100 value=${x1} class="slider" id="trans-x">
-        <p>y</p>
-        <input type="range" min=-100 max=100 value=${y1} class="slider" id="trans-y">
-      <div>
+        <label for="trans-x">x</label>
+        <input type="range" min=-100 max=100 value=${x1} class="slider" id="trans-x"/> <p></p>
+        <label for="trans-y">y</label>
+        <input type="range" min=-100 max=100 value=${y1} class="slider" id="trans-y"/>
+      </div>
+      <div id="rotation">
+        <h4>Rotation</h4>
+        <label for="rotate">θ</label>
+        <input type="range" min=0 max=360 value=${degree} class="slider" id="rotate"/>
+      </div>
     `;
     let properties = document.getElementById("properties");
     properties.innerHTML = html;
@@ -797,13 +809,9 @@ function setProperties() {
     });
 
     let transx = document.getElementById("trans-x");
-    let transy = document.getElementById("trans-y");
     transx.addEventListener("input", function (e) {
       e.preventDefault();
       let x1 = transx.value / 100;
-      console.log("Translation", {
-        "transx": transx,
-      })
       let distx2 = objectToBeDrawn[clickedIndex].x2 - objectToBeDrawn[clickedIndex].x1;
       let distx3 = objectToBeDrawn[clickedIndex].x3 - objectToBeDrawn[clickedIndex].x1;
       let distx4 = objectToBeDrawn[clickedIndex].x4 - objectToBeDrawn[clickedIndex].x1;
@@ -814,12 +822,11 @@ function setProperties() {
       objectToBeDrawn[clickedIndex].x4 = objectToBeDrawn[clickedIndex].x1 + distx4;
       rerender();
     });
+
+    let transy = document.getElementById("trans-y");
     transy.addEventListener("input", function (e) {
       e.preventDefault();
       let y1 = transy.value / -100;
-      console.log("Translation", {
-        "transy": transy,
-      })
       let disty2 = objectToBeDrawn[clickedIndex].y2 - objectToBeDrawn[clickedIndex].y1;
       let disty3 = objectToBeDrawn[clickedIndex].y3 - objectToBeDrawn[clickedIndex].y1;
       let disty4 = objectToBeDrawn[clickedIndex].y4 - objectToBeDrawn[clickedIndex].y1;
@@ -829,7 +836,59 @@ function setProperties() {
       objectToBeDrawn[clickedIndex].y3 = objectToBeDrawn[clickedIndex].y1 + disty3;
       objectToBeDrawn[clickedIndex].y4 = objectToBeDrawn[clickedIndex].y1 + disty4;
       rerender();
-    })
+    });
+    
+    let rotate = document.getElementById("rotate");
+    rotate.addEventListener("input", function (e) {
+      e.preventDefault();
+      let degree = rotate.value * Math.PI /180;
+      let startx1 = objectToBeDrawn[clickedIndex].x1;
+      let starty1 = objectToBeDrawn[clickedIndex].y1;
+      let startx2 = objectToBeDrawn[clickedIndex].x2;
+      let starty2 = objectToBeDrawn[clickedIndex].y2;
+      let startx3 = objectToBeDrawn[clickedIndex].x3;
+      let starty3 = objectToBeDrawn[clickedIndex].y3;
+      let startx4 = objectToBeDrawn[clickedIndex].x4;
+      let starty4 = objectToBeDrawn[clickedIndex].y4;
+      let centerx = (Math.max(startx1, startx2, startx3, startx4) + Math.min(startx1, startx2, startx3, startx4))/2;
+      let centery = (Math.max(starty1, starty2, starty3, starty4) + Math.min(starty1, starty2, starty3, starty4))/2;
+      console.log("Center", {"x": centerx, "y": centery});
+      
+      // x' = x cos B - y sin B
+      // y' = X sin B + y cos B
+      // z = z
+
+      let tempx1 = startx1-centerx;
+      let tempy1 = starty1-centery;
+      let tempx2 = startx2-centerx;
+      let tempy2 = starty2-centery;
+      let tempx3 = startx3-centerx;
+      let tempy3 = starty3-centery;
+      let tempx4 = startx4-centerx;
+      let tempy4 = starty4-centery;
+
+
+      let x1 = (tempx1 * Math.cos(degree) - tempy1 * Math.sin(degree));
+      let y1 = (tempx1 * Math.sin(degree) + tempy1 * Math.cos(degree));
+      let x2 = (tempx2 * Math.cos(degree) - tempy2 * Math.sin(degree));
+      let y2 = (tempx2 * Math.sin(degree) + tempy2 * Math.cos(degree));
+      let x3 = (tempx3 * Math.cos(degree) - tempy3 * Math.sin(degree));
+      let y3 = (tempx3 * Math.sin(degree) + tempy3 * Math.cos(degree));
+      let x4 = (tempx4 * Math.cos(degree) - tempy4 * Math.sin(degree));
+      let y4 = (tempx4 * Math.sin(degree) + tempy4 * Math.cos(degree));
+
+      objectToBeDrawn[clickedIndex].x1 = x1 + centerx;
+      objectToBeDrawn[clickedIndex].y1 = y1 + centery;
+      objectToBeDrawn[clickedIndex].x2 = x2 + centerx;
+      objectToBeDrawn[clickedIndex].y2 = y2 + centery;
+      objectToBeDrawn[clickedIndex].x3 = x3 + centerx;
+      objectToBeDrawn[clickedIndex].y3 = y3 + centery;
+      objectToBeDrawn[clickedIndex].x4 = x4 + centerx;
+      objectToBeDrawn[clickedIndex].y4 = y4 + centery;
+      objectToBeDrawn[clickedIndex].degree = rotate.value
+
+      rerender();
+    });
   }
 }
 
@@ -859,72 +918,6 @@ document.addEventListener("keydown", function (e) {
     }
   }
 });
-
-function translation(object, x, y) {
-  var points = []
-  if(object.type == "point") {
-    points.push(object.x);
-    points.push(object.y);
-  } else if (object.type == "line") {
-    points.push(object.x1);
-    points.push(object.y1);
-    points.push(object.x2);
-    points.push(object.y2);
-  } else if (object.type == "triangle") {
-    points.push(object.x1);
-    points.push(object.y1);
-    points.push(object.x2);
-    points.push(object.y2);
-    points.push(object.x3);
-    points.push(object.y3);
-  } else if (object.type == "rectangle") {
-    points.push(object.x1);
-    points.push(object.y1);
-    points.push(object.x2);
-    points.push(object.y2);
-    points.push(object.x3);
-    points.push(object.y3);
-    points.push(object.x4);
-    points.push(object.y4);
-  }
-
-  points = moveTranslation(points, x, y);
-
-  if(object.type == "point") {
-    object.x = points[0];
-    object.y = points[1];
-  } else if (object.type == "line") {
-    object.x1 = points[0];
-    object.y1 = points[1];
-    object.x2 = points[2];
-    object.y2 = points[3];
-  } else if (object.type == "triangle") {
-    object.x1 = points[0];
-    object.y1 = points[1];
-    object.x2 = points[2];
-    object.y2 = points[3];
-    object.x3 = points[4];
-    object.y3 = points[5];
-  } else if (object.type == "rectangle") {
-    object.x1 = points[0];
-    object.y1 = points[1];
-    object.x2 = points[2];
-    object.y2 = points[3];
-    object.x3 = points[4];
-    object.y3 = points[5];
-    object.x4 = points[6];
-    object.y4 = points[7];
-  }
-}
-
-// Translation
-function moveTranslation(points, x, y) {
-  for (let i = 0; i <= points.length; i+=2) {
-    points[i] += x;
-    points[i+1] += y;
-  }
-  return points;
-}
 
 // main
 setBackground("#000000", 0);

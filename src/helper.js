@@ -388,6 +388,7 @@ function polygon(object, colorHex) {
     type: "polygon",
     triangles: [],
     points: filteredPoints,
+    degree: 0,
   });
 
   // draw many triangles

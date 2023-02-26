@@ -94,9 +94,7 @@ function handleMouseMove(e) {
               clickedIndex = i;
               break;
             }
-          }
-
-          if (item.type == "line") {
+          } else if (item.type == "line") {
             if (Math.abs(item.x1 - x) < TOLERANCE && Math.abs(item.y1 - y) < TOLERANCE) {
               objectToBeMoved = item;
               clickedIndex = i;
@@ -108,9 +106,7 @@ function handleMouseMove(e) {
               clickedPoint = 2;
               break;
             }
-          }
-
-          if (item.type == "triangle") {
+          } else if (item.type == "triangle") {
             if (Math.abs(item.x1 - x) < TOLERANCE && Math.abs(item.y1 - y) < TOLERANCE) {
               objectToBeMoved = item;
               clickedIndex = i;
@@ -127,9 +123,7 @@ function handleMouseMove(e) {
               clickedPoint = 3;
               break;
             }
-          }
-
-          if (item.type == "rectangle" || item.type == "square") {
+          } else if (item.type == "rectangle" || item.type == "square") {
             if (Math.abs(item.x1 - x) < TOLERANCE && Math.abs(item.y1 - y) < TOLERANCE) {
               objectToBeMoved = item;
               clickedIndex = i;
@@ -150,6 +144,15 @@ function handleMouseMove(e) {
               clickedIndex = i;
               clickedPoint = 4;
               break;
+            }
+          } else if (item.type == "polygon") {
+            for (let j = 0; j < item.originalPoints.length; j++) {
+              if (Math.abs(item.originalPoints[j][0] - x) < TOLERANCE && Math.abs(item.originalPoints[j][1] - y) < TOLERANCE) {
+                objectToBeMoved = item;
+                clickedIndex = i;
+                clickedPoint = j;
+                break;
+              }
             }
           }
         }
@@ -281,6 +284,11 @@ function handleMouseMove(e) {
             objectToBeMoved.y3 = result[5];
           }
 
+          setProperties();
+          rerender();
+        } else if (objectToBeMoved.type == "polygon") {
+          objectToBeMoved.originalPoints[clickedPoint][0] = x;
+          objectToBeMoved.originalPoints[clickedPoint][1] = y;
           setProperties();
           rerender();
         }

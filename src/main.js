@@ -12,7 +12,7 @@ let clickedIndex = null;
 let clickedPoint = null;
 let verticesDrawn = 0;
 /*============== Creating a canvas ====================*/
-let canvas = createCanvas(1000, 1200);
+let canvas = createCanvas(1000, 1000);
 
 // bind import-button and export-button
 let importButton = document.getElementById("import-button");
@@ -419,6 +419,7 @@ function handleMouseDown(e) {
           objectBeingDrawn.type = "square";
           objectBeingDrawn.x1 = x;
           objectBeingDrawn.y1 = y;
+          console.log("OAKWOAWKOAWK");
           verticesDrawn++;
         } else if (verticesDrawn == 1) {
           if (Math.abs(objectBeingDrawn.x1 - x) > Math.abs(objectBeingDrawn.y1 - y)) {
@@ -428,6 +429,7 @@ function handleMouseDown(e) {
             objectBeingDrawn.x2 = objectBeingDrawn.x1;
             objectBeingDrawn.y2 = y;
           }
+          console.log("aAKWOAKWOFAOSFKSAFSD????");
           verticesDrawn++;
         } else if (verticesDrawn == 2) {
           if (objectBeingDrawn.rect == "y") {
@@ -774,6 +776,180 @@ function setProperties() {
 
     // add event listener to form
     let form = document.getElementById("rectangleProperties");
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      let x1 = document.getElementById("x1").value;
+      let y1 = document.getElementById("y1").value;
+      let x2 = document.getElementById("x2").value;
+      let y2 = document.getElementById("y2").value;
+      let x3 = document.getElementById("x3").value;
+      let y3 = document.getElementById("y3").value;
+      let x4 = document.getElementById("x4").value;
+      let y4 = document.getElementById("y4").value;
+      let colorHex = document.getElementById("colorHex").value;
+      objectToBeDrawn[clickedIndex].x1 = x1;
+      objectToBeDrawn[clickedIndex].y1 = y1;
+      objectToBeDrawn[clickedIndex].x2 = x2;
+      objectToBeDrawn[clickedIndex].y2 = y2;
+      objectToBeDrawn[clickedIndex].x3 = x3;
+      objectToBeDrawn[clickedIndex].y3 = y3;
+      objectToBeDrawn[clickedIndex].x4 = x4;
+      objectToBeDrawn[clickedIndex].y4 = y4;
+      objectToBeDrawn[clickedIndex].colorHex = colorHex;
+      rerender();
+    });
+
+    let transx = document.getElementById("trans-x");
+    transx.addEventListener("input", function (e) {
+      e.preventDefault();
+      let x1 = transx.value / 100;
+      let distx2 = objectToBeDrawn[clickedIndex].x2 - objectToBeDrawn[clickedIndex].x1;
+      let distx3 = objectToBeDrawn[clickedIndex].x3 - objectToBeDrawn[clickedIndex].x1;
+      let distx4 = objectToBeDrawn[clickedIndex].x4 - objectToBeDrawn[clickedIndex].x1;
+
+      objectToBeDrawn[clickedIndex].x1 = x1;
+      objectToBeDrawn[clickedIndex].x2 = objectToBeDrawn[clickedIndex].x1 + distx2;
+      objectToBeDrawn[clickedIndex].x3 = objectToBeDrawn[clickedIndex].x1 + distx3;
+      objectToBeDrawn[clickedIndex].x4 = objectToBeDrawn[clickedIndex].x1 + distx4;
+      rerender();
+    });
+
+    let transy = document.getElementById("trans-y");
+    transy.addEventListener("input", function (e) {
+      e.preventDefault();
+      let y1 = transy.value / -100;
+      let disty2 = objectToBeDrawn[clickedIndex].y2 - objectToBeDrawn[clickedIndex].y1;
+      let disty3 = objectToBeDrawn[clickedIndex].y3 - objectToBeDrawn[clickedIndex].y1;
+      let disty4 = objectToBeDrawn[clickedIndex].y4 - objectToBeDrawn[clickedIndex].y1;
+
+      objectToBeDrawn[clickedIndex].y1 = y1;
+      objectToBeDrawn[clickedIndex].y2 = objectToBeDrawn[clickedIndex].y1 + disty2;
+      objectToBeDrawn[clickedIndex].y3 = objectToBeDrawn[clickedIndex].y1 + disty3;
+      objectToBeDrawn[clickedIndex].y4 = objectToBeDrawn[clickedIndex].y1 + disty4;
+      rerender();
+    });
+    
+    let rotate = document.getElementById("rotate");
+    rotate.addEventListener("input", function (e) {
+      e.preventDefault();
+      let degree = rotate.value * Math.PI /180;
+      let startx1 = objectToBeDrawn[clickedIndex].x1;
+      let starty1 = objectToBeDrawn[clickedIndex].y1;
+      let startx2 = objectToBeDrawn[clickedIndex].x2;
+      let starty2 = objectToBeDrawn[clickedIndex].y2;
+      let startx3 = objectToBeDrawn[clickedIndex].x3;
+      let starty3 = objectToBeDrawn[clickedIndex].y3;
+      let startx4 = objectToBeDrawn[clickedIndex].x4;
+      let starty4 = objectToBeDrawn[clickedIndex].y4;
+      let centerx = (Math.max(startx1, startx2, startx3, startx4) + Math.min(startx1, startx2, startx3, startx4))/2;
+      let centery = (Math.max(starty1, starty2, starty3, starty4) + Math.min(starty1, starty2, starty3, starty4))/2;
+      console.log("Center", {"x": centerx, "y": centery});
+      
+      // x' = x cos B - y sin B
+      // y' = X sin B + y cos B
+      // z = z
+
+      let tempx1 = startx1-centerx;
+      let tempy1 = starty1-centery;
+      let tempx2 = startx2-centerx;
+      let tempy2 = starty2-centery;
+      let tempx3 = startx3-centerx;
+      let tempy3 = starty3-centery;
+      let tempx4 = startx4-centerx;
+      let tempy4 = starty4-centery;
+
+
+      let x1 = (tempx1 * Math.cos(degree) - tempy1 * Math.sin(degree));
+      let y1 = (tempx1 * Math.sin(degree) + tempy1 * Math.cos(degree));
+      let x2 = (tempx2 * Math.cos(degree) - tempy2 * Math.sin(degree));
+      let y2 = (tempx2 * Math.sin(degree) + tempy2 * Math.cos(degree));
+      let x3 = (tempx3 * Math.cos(degree) - tempy3 * Math.sin(degree));
+      let y3 = (tempx3 * Math.sin(degree) + tempy3 * Math.cos(degree));
+      let x4 = (tempx4 * Math.cos(degree) - tempy4 * Math.sin(degree));
+      let y4 = (tempx4 * Math.sin(degree) + tempy4 * Math.cos(degree));
+
+      objectToBeDrawn[clickedIndex].x1 = x1 + centerx;
+      objectToBeDrawn[clickedIndex].y1 = y1 + centery;
+      objectToBeDrawn[clickedIndex].x2 = x2 + centerx;
+      objectToBeDrawn[clickedIndex].y2 = y2 + centery;
+      objectToBeDrawn[clickedIndex].x3 = x3 + centerx;
+      objectToBeDrawn[clickedIndex].y3 = y3 + centery;
+      objectToBeDrawn[clickedIndex].x4 = x4 + centerx;
+      objectToBeDrawn[clickedIndex].y4 = y4 + centery;
+      objectToBeDrawn[clickedIndex].degree = rotate.value;
+
+      rerender();
+    });
+  } else if (objectToBeDrawn[clickedIndex].type == "square") {
+    let x1 = objectToBeDrawn[clickedIndex].x1;
+    let y1 = objectToBeDrawn[clickedIndex].y1;
+    let x2 = objectToBeDrawn[clickedIndex].x2;
+    let y2 = objectToBeDrawn[clickedIndex].y2;
+    let x3 = objectToBeDrawn[clickedIndex].x3;
+    let y3 = objectToBeDrawn[clickedIndex].y3;
+    let x4 = objectToBeDrawn[clickedIndex].x4;
+    let y4 = objectToBeDrawn[clickedIndex].y4;
+    let degree = objectToBeDrawn[clickedIndex].degree;
+    let colorHex = objectToBeDrawn[clickedIndex].colorHex;
+    html = `
+    <form id="squareProperties">
+      <div id="properties-title">
+        <h3>Square Properties</h3>
+      </div>
+      <div>
+        <label for="x1">x1</label>
+        <input id="x1" value=${x1} />
+      </div>
+      <div>
+        <label for="y1">y1</label>
+        <input id="y1" value=${y1} />
+      </div>
+      <div>
+        <label for="x2">x2</label>
+        <input id="x2" value=${x2} />
+      </div>
+      <div>
+        <label for="y2">y2</label>
+        <input id="y2" value=${y2} />
+      </div>
+      <div>
+        <label for="x3">x3</label>
+        <input id="x3" value=${x3} />
+      </div>
+      <div>
+        <label for="y3">y3</label>
+        <input id="y3" value=${y3} />
+      </div>
+      <div>
+        <label for="x4">x4</label>
+        <input id="x4" value=${x4} />
+      </div>
+      <div>
+        <label for="y4">y4</label>
+        <input id="y4" value=${y4} />
+      </div>
+      <input type="color" id="colorHex" name="favcolor" value=${colorHex}>
+      </div>
+      <input type="submit">
+      </form>
+      <div id="translation">
+        <h4>Translation</h4>
+        <label for="trans-x">x</label>
+        <input type="range" min=-100 max=100 value=${x1} class="slider" id="trans-x"/> <p></p>
+        <label for="trans-y">y</label>
+        <input type="range" min=-100 max=100 value=${y1} class="slider" id="trans-y"/>
+      </div>
+      <div id="rotation">
+        <h4>Rotation</h4>
+        <label for="rotate">θ</label>
+        <input type="range" min=0 max=360 value=${degree} class="slider" id="rotate"/>
+      </div>
+    `;
+    let properties = document.getElementById("properties");
+    properties.innerHTML = html;
+
+    // add event listener to form
+    let form = document.getElementById("squareProperties");
     form.addEventListener("submit", function (e) {
       e.preventDefault();
       let x1 = document.getElementById("x1").value;

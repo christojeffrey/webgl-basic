@@ -1229,6 +1229,10 @@ function setProperties() {
   } else if (objectToBeDrawn[clickedIndex].type == "polygon") {
     console.log(objectToBeDrawn[clickedIndex]);
     let points = objectToBeDrawn[clickedIndex].points;
+    let degree = objectToBeDrawn[clickedIndex].degree;
+    let originalPoints = objectToBeDrawn[clickedIndex].originalPoints;
+    let center = findCenterPolygon(points);
+    objectToBeDrawn[clickedIndex].center = center;
     let pointHtml = "";
     for (let i = 0; i < points.length; i++) {
       pointHtml += `
@@ -1263,6 +1267,18 @@ function setProperties() {
       </div>
       </form>
       <button id="redrawPolygon">add new vertex</button>
+      <div id="translation">
+        <h4>Translation</h4>
+        <label for="trans-x">x</label>
+        <input type="range" min=-100 max=100 value=${points[0][0]} class="slider" id="trans-x"/> <p></p>
+        <label for="trans-y">y</label>
+        <input type="range" min=-100 max=100 value=${points[0][1]} class="slider" id="trans-y"/>
+      </div>
+      <div id="rotation">
+        <h4>Rotation</h4>
+        <label for="rotate">θ</label>
+        <input type="range" min=0 max=360 value=${degree} class="slider" id="rotate"/>
+      </div>
     `;
     let properties = document.getElementById("properties");
     properties.innerHTML = html;
@@ -1282,6 +1298,114 @@ function setProperties() {
       objectToBeDrawn[clickedIndex].colorHex = colorHex;
       rerender();
     });
+
+    let transx = document.getElementById("trans-x");
+    transx.addEventListener("input", function (e) {
+      e.preventDefault();
+      
+      let dist = [];
+      originalPoints[0][0] = transx.value / 100;
+
+      // geser
+      let xmover = transx.value / 100;
+
+      objectToBeDrawn[clickedIndex].originalPoints = objectToBeDrawn[clickedIndex].originalPoints.map((eachPoint)=>{
+
+        console.log(eachPoint);
+          return [eachPoint[0] + xmover] [eachPoint[1]];
+      })
+
+      // for (let i=0; i<originalPoints.length; i++) {
+      //   let tempx = originalPoints[i][0] - originalPoints[0][0];
+      //   let tempy = originalPoints[i][1] - originalPoints[0][1];
+      //   dist.push([tempx, tempy]);
+      // }
+
+      // let newOriginalPoints = [];
+
+      // for (let i=0; i<originalPoints.length; i++) {
+      //   let tempx = originalPoints[0][0] + dist[i][0];
+      //   let tempy = originalPoints[0][1] + dist[i][1];
+      //   newOriginalPoints.push([tempx, tempy]);
+      //   objectToBeDrawn[clickedIndex].originalPoints[i][0] = tempx;
+      //   objectToBeDrawn[clickedIndex].originalPoints[i][1] = tempy;
+      // }
+  
+      // let newCenter = findCenterPolygon(newOriginalPoints);
+      // objectToBeDrawn[clickedIndex].center = newCenter;
+      rerender();
+    });
+
+    let transy = document.getElementById("trans-y");
+    transy.addEventListener("input", function (e) {
+      e.preventDefault();
+      
+      let dist = [];
+      points[0][1] = transy.value / 100;
+
+      for (let i=0; i<points.length; i++) {
+        let tempy = points[i][1] - points[0][1];
+        dist.push([0, tempy]);
+      }
+
+      let newPoints = [];
+
+      for (let i=0; i<points.length; i++) {
+        let tempx = points[0][0] + dist[i][0];
+        let tempy = points[0][1] + dist[i][1];
+        newPoints.push([tempx, tempy]);
+        objectToBeDrawn[clickedIndex].originalPoints[i][0] = tempx;
+        objectToBeDrawn[clickedIndex].originalPoints[i][1] = tempy;
+      }
+      let newCenter = findCenterPolygon(newPoints);
+      objectToBeDrawn[clickedIndex].points = newPoints;
+      objectToBeDrawn[clickedIndex].center = newCenter;
+      rerender();
+    });
+
+    let rotate = document.getElementById("rotate");
+    rotate.addEventListener("input", function (e) {
+      e.preventDefault();
+      let degree = (rotate.value * Math.PI) / 180;
+      let startx1 = objectToBeDrawn[clickedIndex].x1;
+      let starty1 = objectToBeDrawn[clickedIndex].y1;
+      let startx2 = objectToBeDrawn[clickedIndex].x2;
+      let starty2 = objectToBeDrawn[clickedIndex].y2;
+      let startx3 = objectToBeDrawn[clickedIndex].x3;
+      let starty3 = objectToBeDrawn[clickedIndex].y3;
+      let centerx = objectToBeDrawn[clickedIndex].centerx;
+      let centery = objectToBeDrawn[clickedIndex].centery;
+      console.log("Center", { x: centerx, y: centery });
+
+      // x' = x cos B - y sin B
+      // y' = X sin B + y cos B
+      // z = z
+
+      let tempx1 = startx1 - centerx;
+      let tempy1 = starty1 - centery;
+      let tempx2 = startx2 - centerx;
+      let tempy2 = starty2 - centery;
+      let tempx3 = startx3 - centerx;
+      let tempy3 = starty3 - centery;
+
+      let x1 = tempx1 * Math.cos(degree) - tempy1 * Math.sin(degree);
+      let y1 = tempx1 * Math.sin(degree) + tempy1 * Math.cos(degree);
+      let x2 = tempx2 * Math.cos(degree) - tempy2 * Math.sin(degree);
+      let y2 = tempx2 * Math.sin(degree) + tempy2 * Math.cos(degree);
+      let x3 = tempx3 * Math.cos(degree) - tempy3 * Math.sin(degree);
+      let y3 = tempx3 * Math.sin(degree) + tempy3 * Math.cos(degree);
+
+      objectToBeDrawn[clickedIndex].x1 = x1 + centerx;
+      objectToBeDrawn[clickedIndex].y1 = y1 + centery;
+      objectToBeDrawn[clickedIndex].x2 = x2 + centerx;
+      objectToBeDrawn[clickedIndex].y2 = y2 + centery;
+      objectToBeDrawn[clickedIndex].x3 = x3 + centerx;
+      objectToBeDrawn[clickedIndex].y3 = y3 + centery;
+      objectToBeDrawn[clickedIndex].degree = rotate.value;
+
+      rerender();
+    });
+
     // handle on delete
     for (let i = 0; i < points.length; i++) {
       let deletePoint = document.getElementById(`deletePoint${i + 1}`);
@@ -1323,6 +1447,22 @@ function setProperties() {
       rerender();
     });
   }
+}
+
+function findCenterPolygon(points) {
+  let maxx = -2
+  let minx = 2
+  let maxy = -2
+  let miny = 2;
+  for (let i=0; i<points.length; i++) {
+    maxx = Math.max(maxx, points[0]);
+    minx = Math.min(minx, points[0]);
+    maxy = Math.max(maxy, points[1]);
+    miny = Math.min(miny, points[1]);
+  }
+  let centerx = (maxx + minx)/2;
+  let centery = (maxy + miny)/2;
+  return [centerx, centery];
 }
 
 // handle keyboard event

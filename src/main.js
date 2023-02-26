@@ -464,25 +464,7 @@ function handleMouseDown(e) {
         objectBeingDrawn.originalPoints = [];
       }
       objectBeingDrawn.originalPoints.push([x, y]);
-      // // filter with convex hull
-      // // add point to sides array
 
-      // let points = convexHull(objectBeingDrawn.originalPoints);
-
-      // points = removeUnusedPoints(points);
-      // console.log("points");
-      // console.log(points);
-
-      // let triangles = triangulate(points);
-
-      // console.log("triangles");
-      // for (let i = 0; i < triangles.length; i++) {
-      //   console.log(triangles[i]);
-      // }
-      // objectBeingDrawn.points = points;
-      // objectBeingDrawn.triangles = triangles;
-      // console.log("objectBeingDrawn");
-      // console.log(objectBeingDrawn);
       verticesDrawn++;
       break;
 
@@ -861,6 +843,7 @@ function setProperties() {
         <button type="submit">Update</button>
       </div>
       </form>
+      <button id="redrawPolygon">add new vertex</button>
     `;
     let properties = document.getElementById("properties");
     properties.innerHTML = html;
@@ -890,12 +873,36 @@ function setProperties() {
           return point[0] != points[i][0] && point[1] != points[i][1];
         });
 
-
         rerender();
         // update right nav
         setProperties();
       });
     }
+    // handle redrawPolygon
+    let redrawPolygon = document.getElementById("redrawPolygon");
+    redrawPolygon.addEventListener("click", function (e) {
+      e.preventDefault();
+      drawItemValue = "polygon";
+      // change the UI
+      drawItem.value = "polygon";
+      // get the polygon object, put it in objectBeingDrawn. remove polygon object from objectToBeDrawn.
+      let prevPolygon = objectToBeDrawn[clickedIndex];
+      // remove object at clickedIndex from objectToBeDrawn using splice
+      objectToBeDrawn.splice(clickedIndex, 1);
+      // update objectBeingDrawn
+      objectBeingDrawn.type = "polygon";
+      objectBeingDrawn.originalPoints = [];
+      prevPolygon.points.forEach((e) => {
+        objectBeingDrawn.originalPoints.push(e);
+      });
+      objectBeingDrawn.colorHex = prevPolygon.colorHex;
+      verticesDrawn = prevPolygon.points.length;
+      // set rightNav to be empty
+      let properties = document.getElementById("properties");
+      properties.innerHTML = "";
+      // rerender
+      rerender();
+    });
   }
 }
 

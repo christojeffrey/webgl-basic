@@ -192,7 +192,8 @@ function handleMouseMove(e) {
             objectToBeMoved.x3 = x;
             objectToBeMoved.y3 = y;
           }
-
+          objectToBeMoved.centerx = (Math.max(objectToBeMoved.x1,objectToBeMoved.x2,objectToBeMoved.x3)+Math.min(objectToBeMoved.x1,objectToBeMoved.x2,objectToBeMoved.x3))/2;
+          objectToBeMoved.centery = (Math.max(objectToBeMoved.y1,objectToBeMoved.y2,objectToBeMoved.y3)+Math.min(objectToBeMoved.y1,objectToBeMoved.y2,objectToBeMoved.y3))/2;
           setProperties();
           rerender();
         } else if (objectToBeMoved.type == "rectangle") {
@@ -341,6 +342,7 @@ function handleMouseDown(e) {
       // initiate drawing line
       if (verticesDrawn == 0) {
         objectBeingDrawn.type = "line";
+        objectBeingDrawn.degree = 0;
         objectBeingDrawn.x1 = x;
         objectBeingDrawn.y1 = y;
         verticesDrawn++;
@@ -356,6 +358,7 @@ function handleMouseDown(e) {
       // initiate drawing triangle
       if (verticesDrawn == 0) {
         objectBeingDrawn.type = "triangle";
+        objectBeingDrawn.degree = 0;
         objectBeingDrawn.x1 = x;
         objectBeingDrawn.y1 = y;
         verticesDrawn++;
@@ -366,6 +369,9 @@ function handleMouseDown(e) {
       } else if (verticesDrawn == 2) {
         objectBeingDrawn.x3 = x;
         objectBeingDrawn.y3 = y;
+        objectBeingDrawn.centerx = (Math.max(objectBeingDrawn.x1, objectBeingDrawn.x2, objectBeingDrawn.x3)+Math.min(objectBeingDrawn.x1, objectBeingDrawn.x2, objectBeingDrawn.x3))/2
+        objectBeingDrawn.centery = (Math.max(objectBeingDrawn.y1, objectBeingDrawn.y2, objectBeingDrawn.y3)+Math.min(objectBeingDrawn.y1, objectBeingDrawn.y2, objectBeingDrawn.y3))/2
+        console.log("TRIANGLE", objectBeingDrawn)
         finishDrawing();
         verticesDrawn = 0;
       }
@@ -640,6 +646,7 @@ function setProperties() {
     let y2 = objectToBeDrawn[clickedIndex].y2;
     let x3 = objectToBeDrawn[clickedIndex].x3;
     let y3 = objectToBeDrawn[clickedIndex].y3;
+    let degree = objectToBeDrawn[clickedIndex].degree;
     let colorHex = objectToBeDrawn[clickedIndex].colorHex;
     html = `
     <form id="triangleProperties">
@@ -670,15 +677,23 @@ function setProperties() {
         <label for="y3">y3</label>
         <input id="y3" value=${y3} />
       </div>
-      <div class="rotate">
-        <h4>Rotate</h4>
-        <input type="text" id="rotate" name="rotate">
-      </div>
       <div>
       <input type="color" id="colorHex" name="favcolor" value=${colorHex}>
       </div>
       <input type="submit">
       </form>
+      <div id="translation">
+        <h4>Translation</h4>
+        <label for="trans-x">x</label>
+        <input type="range" min=-100 max=100 value=${x1} class="slider" id="trans-x"/> <p></p>
+        <label for="trans-y">y</label>
+        <input type="range" min=-100 max=100 value=${y1} class="slider" id="trans-y"/>
+      </div>
+      <div id="rotation">
+        <h4>Rotation</h4>
+        <label for="rotate">θ</label>
+        <input type="range" min=0 max=360 value=${degree} class="slider" id="rotate"/>
+      </div>
     `;
     let properties = document.getElementById("properties");
     properties.innerHTML = html;
@@ -700,7 +715,84 @@ function setProperties() {
       objectToBeDrawn[clickedIndex].y2 = y2;
       objectToBeDrawn[clickedIndex].x3 = x3;
       objectToBeDrawn[clickedIndex].y3 = y3;
+      objectToBeDrawn[clickedIndex].centerx = (Math.max(x1,x2,x3)+Math.min(x1,x2,x3))/2
+      objectToBeDrawn[clickedIndex].centery = (Math.max(y1,y2,y3)+Math.min(y1,y2,y3))/2
       objectToBeDrawn[clickedIndex].colorHex = colorHex;
+      rerender();
+    });
+
+    let transx = document.getElementById("trans-x");
+    transx.addEventListener("input", function (e) {
+      e.preventDefault();
+      let x1 = transx.value / 100;
+      let distx2 = objectToBeDrawn[clickedIndex].x2 - objectToBeDrawn[clickedIndex].x1;
+      let distx3 = objectToBeDrawn[clickedIndex].x3 - objectToBeDrawn[clickedIndex].x1;
+      let distcenter = objectToBeDrawn[clickedIndex].centerx - objectToBeDrawn[clickedIndex].x1;
+
+      objectToBeDrawn[clickedIndex].x1 = x1;
+      objectToBeDrawn[clickedIndex].x2 = objectToBeDrawn[clickedIndex].x1 + distx2;
+      objectToBeDrawn[clickedIndex].x3 = objectToBeDrawn[clickedIndex].x1 + distx3;
+      objectToBeDrawn[clickedIndex].centerx = objectToBeDrawn[clickedIndex].x1 + distcenter;
+
+      rerender();
+    });
+
+    let transy = document.getElementById("trans-y");
+    transy.addEventListener("input", function (e) {
+      e.preventDefault();
+      let y1 = transy.value / -100;
+      let disty2 = objectToBeDrawn[clickedIndex].y2 - objectToBeDrawn[clickedIndex].y1;
+      let disty3 = objectToBeDrawn[clickedIndex].y3 - objectToBeDrawn[clickedIndex].y1;
+      let distcenter = objectToBeDrawn[clickedIndex].centery - objectToBeDrawn[clickedIndex].y1;
+
+      objectToBeDrawn[clickedIndex].y1 = y1;
+      objectToBeDrawn[clickedIndex].y2 = objectToBeDrawn[clickedIndex].y1 + disty2;
+      objectToBeDrawn[clickedIndex].y3 = objectToBeDrawn[clickedIndex].y1 + disty3;
+      objectToBeDrawn[clickedIndex].centery = objectToBeDrawn[clickedIndex].y1 + distcenter;
+
+      rerender();
+    });
+    
+    let rotate = document.getElementById("rotate");
+    rotate.addEventListener("input", function (e) {
+      e.preventDefault();
+      let degree = rotate.value * Math.PI /180;
+      let startx1 = objectToBeDrawn[clickedIndex].x1;
+      let starty1 = objectToBeDrawn[clickedIndex].y1;
+      let startx2 = objectToBeDrawn[clickedIndex].x2;
+      let starty2 = objectToBeDrawn[clickedIndex].y2;
+      let startx3 = objectToBeDrawn[clickedIndex].x3;
+      let starty3 = objectToBeDrawn[clickedIndex].y3;
+      let centerx = objectToBeDrawn[clickedIndex].centerx;
+      let centery = objectToBeDrawn[clickedIndex].centery;
+      console.log("Center", {"x": centerx, "y": centery});
+      
+      // x' = x cos B - y sin B
+      // y' = X sin B + y cos B
+      // z = z
+
+      let tempx1 = startx1-centerx;
+      let tempy1 = starty1-centery;
+      let tempx2 = startx2-centerx;
+      let tempy2 = starty2-centery;
+      let tempx3 = startx3-centerx;
+      let tempy3 = starty3-centery;
+
+      let x1 = (tempx1 * Math.cos(degree) - tempy1 * Math.sin(degree));
+      let y1 = (tempx1 * Math.sin(degree) + tempy1 * Math.cos(degree));
+      let x2 = (tempx2 * Math.cos(degree) - tempy2 * Math.sin(degree));
+      let y2 = (tempx2 * Math.sin(degree) + tempy2 * Math.cos(degree));
+      let x3 = (tempx3 * Math.cos(degree) - tempy3 * Math.sin(degree));
+      let y3 = (tempx3 * Math.sin(degree) + tempy3 * Math.cos(degree));
+
+      objectToBeDrawn[clickedIndex].x1 = x1 + centerx;
+      objectToBeDrawn[clickedIndex].y1 = y1 + centery;
+      objectToBeDrawn[clickedIndex].x2 = x2 + centerx;
+      objectToBeDrawn[clickedIndex].y2 = y2 + centery;
+      objectToBeDrawn[clickedIndex].x3 = x3 + centerx;
+      objectToBeDrawn[clickedIndex].y3 = y3 + centery;
+      objectToBeDrawn[clickedIndex].degree = rotate.value;
+
       rerender();
     });
 

@@ -1174,9 +1174,9 @@ function setProperties() {
     console.log(objectToBeDrawn[clickedIndex]);
     let points = objectToBeDrawn[clickedIndex].points;
     let degree = objectToBeDrawn[clickedIndex].degree;
-    let originalPoints = objectToBeDrawn[clickedIndex].originalPoints;
     let center = findCenterPolygon(points);
-    objectToBeDrawn[clickedIndex].center = center;
+    // objectToBeDrawn[clickedIndex].center = center;
+    console.log(objectToBeDrawn[clickedIndex]);
     let pointHtml = "";
     for (let i = 0; i < points.length; i++) {
       pointHtml += `
@@ -1246,37 +1246,16 @@ function setProperties() {
     let transx = document.getElementById("trans-x");
     transx.addEventListener("input", function (e) {
       e.preventDefault();
-      
+      let originalPoints = objectToBeDrawn[clickedIndex].originalPoints;
       let dist = [];
-      originalPoints[0][0] = transx.value / 100;
-
-      // geser
       let xmover = transx.value / 100;
+      console.log("Polygon", objectToBeDrawn[clickedIndex])
 
-      objectToBeDrawn[clickedIndex].originalPoints = objectToBeDrawn[clickedIndex].originalPoints.map((eachPoint)=>{
+      for (let i=0; i<originalPoints.length; i++) {
+        originalPoints[i][0] = originalPoints[i][0] + xmover;
+      }
 
-        console.log(eachPoint);
-          return [eachPoint[0] + xmover] [eachPoint[1]];
-      })
-
-      // for (let i=0; i<originalPoints.length; i++) {
-      //   let tempx = originalPoints[i][0] - originalPoints[0][0];
-      //   let tempy = originalPoints[i][1] - originalPoints[0][1];
-      //   dist.push([tempx, tempy]);
-      // }
-
-      // let newOriginalPoints = [];
-
-      // for (let i=0; i<originalPoints.length; i++) {
-      //   let tempx = originalPoints[0][0] + dist[i][0];
-      //   let tempy = originalPoints[0][1] + dist[i][1];
-      //   newOriginalPoints.push([tempx, tempy]);
-      //   objectToBeDrawn[clickedIndex].originalPoints[i][0] = tempx;
-      //   objectToBeDrawn[clickedIndex].originalPoints[i][1] = tempy;
-      // }
-  
-      // let newCenter = findCenterPolygon(newOriginalPoints);
-      // objectToBeDrawn[clickedIndex].center = newCenter;
+      objectToBeDrawn[clickedIndex].originalPoints = originalPoints;
       rerender();
     });
 
@@ -1398,10 +1377,10 @@ function findCenterPolygon(points) {
   let maxy = -2
   let miny = 2;
   for (let i=0; i<points.length; i++) {
-    maxx = Math.max(maxx, points[0]);
-    minx = Math.min(minx, points[0]);
-    maxy = Math.max(maxy, points[1]);
-    miny = Math.min(miny, points[1]);
+    maxx = Math.max(maxx, points[i][0]);
+    minx = Math.min(minx, points[i][0]);
+    maxy = Math.max(maxy, points[i][1]);
+    miny = Math.min(miny, points[i][1]);
   }
   let centerx = (maxx + minx)/2;
   let centery = (maxy + miny)/2;

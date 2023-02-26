@@ -885,10 +885,15 @@ function setProperties() {
       let deletePoint = document.getElementById(`deletePoint${i + 1}`);
       deletePoint.addEventListener("click", function (e) {
         e.preventDefault();
-        objectToBeDrawn[clickedIndex].points.splice(i, 1);
-        // recalculate triangle
+        // remove point
+        objectToBeDrawn[clickedIndex].originalPoints = objectToBeDrawn[clickedIndex].originalPoints.filter((point) => {
+          return point[0] != points[i][0] && point[1] != points[i][1];
+        });
+
 
         rerender();
+        // update right nav
+        setProperties();
       });
     }
   }

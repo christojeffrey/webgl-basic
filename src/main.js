@@ -1174,9 +1174,8 @@ function setProperties() {
     console.log(objectToBeDrawn[clickedIndex]);
     let points = objectToBeDrawn[clickedIndex].points;
     let degree = objectToBeDrawn[clickedIndex].degree;
-    let center = findCenterPolygon(points);
     let originalPoints = objectToBeDrawn[clickedIndex].originalPoints;
-    objectToBeDrawn[clickedIndex].center = center;
+    // objectToBeDrawn[clickedIndex].center = center;
     console.log(objectToBeDrawn[clickedIndex]);
     let pointHtml = "";
     for (let i = 0; i < points.length; i++) {
@@ -1303,6 +1302,7 @@ function setProperties() {
     let rotate = document.getElementById("rotate");
     rotate.addEventListener("input", function (e) {
       e.preventDefault();
+      let temporiginalPoints = objectToBeDrawn[clickedIndex].originalPoints;
       let degree = (rotate.value * Math.PI) / 180;
       let center = objectToBeDrawn[clickedIndex].center;
       console.log("Center", { center });
@@ -1311,39 +1311,57 @@ function setProperties() {
       // y' = X sin B + y cos B
       // z = z
 
-      let move = [];
+      let moved = [];
 
       for (let i=0; i<temporiginalPoints.length; i++) {
         let tempx = temporiginalPoints[i][0] - center[0];
         let tempy = temporiginalPoints[i][1] - center[1];
-        move.push([tempx, tempy]);
+        moved.push([tempx, tempy]);
+      }
+
+      let rotated = []
+
+      for (let i=0; i<temporiginalPoints.length; i++) {
+        let tempx = moved[i][0] * Math.cos(degree) - moved[i][1] * Math.sin(degree);
+        let tempy = moved[i][0] * Math.sin(degree) + moved[i][1] * Math.cos(degree);
+        rotated.push([tempx, tempy]);
       }
 
       let newOriginalPoints = [];
 
-      let tempx1 = startx1 - centerx;
-      let tempy1 = starty1 - centery;
-      let tempx2 = startx2 - centerx;
-      let tempy2 = starty2 - centery;
-      let tempx3 = startx3 - centerx;
-      let tempy3 = starty3 - centery;
+      for (let i=0; i<temporiginalPoints.length; i++) {
+        let tempx = rotated[i][0] + center[0];
+        let tempy = rotated[i][1] + center[1];
+        newOriginalPoints.push([tempx, tempy]);
+      }
 
-      let x1 = tempx1 * Math.cos(degree) - tempy1 * Math.sin(degree);
-      let y1 = tempx1 * Math.sin(degree) + tempy1 * Math.cos(degree);
-      let x2 = tempx2 * Math.cos(degree) - tempy2 * Math.sin(degree);
-      let y2 = tempx2 * Math.sin(degree) + tempy2 * Math.cos(degree);
-      let x3 = tempx3 * Math.cos(degree) - tempy3 * Math.sin(degree);
-      let y3 = tempx3 * Math.sin(degree) + tempy3 * Math.cos(degree);
-
-      objectToBeDrawn[clickedIndex].x1 = x1 + centerx;
-      objectToBeDrawn[clickedIndex].y1 = y1 + centery;
-      objectToBeDrawn[clickedIndex].x2 = x2 + centerx;
-      objectToBeDrawn[clickedIndex].y2 = y2 + centery;
-      objectToBeDrawn[clickedIndex].x3 = x3 + centerx;
-      objectToBeDrawn[clickedIndex].y3 = y3 + centery;
-      objectToBeDrawn[clickedIndex].degree = rotate.value;
-
+      objectToBeDrawn[clickedIndex].originalPoints = newOriginalPoints;
+      console.log(objectToBeDrawn[clickedIndex]);
       rerender();
+
+      // let tempx1 = startx1 - centerx;
+      // let tempy1 = starty1 - centery;
+      // let tempx2 = startx2 - centerx;
+      // let tempy2 = starty2 - centery;
+      // let tempx3 = startx3 - centerx;
+      // let tempy3 = starty3 - centery;
+
+      // let x1 = tempx1 * Math.cos(degree) - tempy1 * Math.sin(degree);
+      // let y1 = tempx1 * Math.sin(degree) + tempy1 * Math.cos(degree);
+      // let x2 = tempx2 * Math.cos(degree) - tempy2 * Math.sin(degree);
+      // let y2 = tempx2 * Math.sin(degree) + tempy2 * Math.cos(degree);
+      // let x3 = tempx3 * Math.cos(degree) - tempy3 * Math.sin(degree);
+      // let y3 = tempx3 * Math.sin(degree) + tempy3 * Math.cos(degree);
+
+      // objectToBeDrawn[clickedIndex].x1 = x1 + centerx;
+      // objectToBeDrawn[clickedIndex].y1 = y1 + centery;
+      // objectToBeDrawn[clickedIndex].x2 = x2 + centerx;
+      // objectToBeDrawn[clickedIndex].y2 = y2 + centery;
+      // objectToBeDrawn[clickedIndex].x3 = x3 + centerx;
+      // objectToBeDrawn[clickedIndex].y3 = y3 + centery;
+      // objectToBeDrawn[clickedIndex].degree = rotate.value;
+
+      // rerender();
     });
 
     // handle on delete
@@ -1415,6 +1433,8 @@ document.addEventListener("keydown", function (e) {
   // stop drawing polygon on enter
   if (e.key == "Enter") {
     if (drawItem.value == "polygon" && verticesDrawn != 0) {
+      console.log("POINTS", objectBeingDrawn);
+      objectBeingDrawn.center = findCenterPolygon(objectBeingDrawn.points);
       if (verticesDrawn > 2) {
         finishDrawing();
       } else {
